@@ -166,55 +166,19 @@
         <a class="text-sm font-semibold hover:text-primary transition-colors" href="#events">الفعاليات</a>
         <a class="text-sm font-semibold hover:text-primary transition-colors" href="#faq">الأسئلة</a>
       </nav>
-      <!-- Weather Widget - Desktop/Large -->
-      <div id="weather-widget"
-        class="hidden xl:flex items-center gap-3 bg-gradient-to-br from-primary/20 via-primary/5 to-transparent backdrop-blur-md px-5 py-2.5 rounded-2xl border border-primary/30 shadow-[0_0_20px_rgba(19,236,236,0.15)] hover:shadow-primary/20 transition-all duration-500 group">
-        <span class="material-symbols-outlined text-primary text-3xl transition-transform group-hover:scale-110"
-          id="weather-icon">wb_sunny</span>
-        <div class="text-right">
-          <div class="flex items-center gap-1.5">
-            <span class="text-lg font-black text-[#111818] dark:text-white" id="weather-temp">--</span>
-            <span class="text-xs font-black text-primary">°C</span>
-          </div>
-          <div class="text-[10px] font-bold uppercase tracking-[0.1em] opacity-50 flex items-center gap-1">
-            <span class="w-1 h-1 bg-green-500 rounded-full animate-pulse"></span> الحريضة مباشر
-          </div>
-        </div>
-      </div>
-      <!-- Weather Widget - Tablet/Medium -->
+      <!-- Unified Weather Widget (PC & Tablet) -->
       <div id="weather-widget-mobile"
-        class="hidden md:flex xl:hidden items-center gap-2 bg-gradient-to-r from-sky-400/10 to-primary/10 backdrop-blur-sm px-3 py-2 rounded-xl border border-sky-300/20">
-        <span class="material-symbols-outlined text-sky-400 text-xl" id="weather-icon-mobile">wb_sunny</span>
+        class="hidden md:flex items-center gap-2 bg-gradient-to-r from-primary/10 to-ocean-blue/10 backdrop-blur-sm px-4 py-2 rounded-xl border border-primary/20">
+        <span class="material-symbols-outlined text-primary text-xl" id="weather-icon-mobile">wb_sunny</span>
         <div class="text-right">
           <span class="text-sm font-bold" id="weather-temp-mobile">--</span>
-          <span class="text-xs opacity-70">°C</span>
+          <span class="text-xs opacity-70 font-bold">°C</span>
         </div>
       </div>
-      <!-- Prayer Times Widget - Desktop/Large -->
-      <div id="prayer-widget"
-        class="hidden 2xl:flex items-center gap-3 bg-gradient-to-r from-sunset-purple/10 to-sunset-orange/10 backdrop-blur-sm px-4 py-2 rounded-xl border border-sunset-purple/20">
-        <span class="material-symbols-outlined text-sunset-purple text-2xl">mosque</span>
-        <div class="text-right">
-          <div class="text-xs font-medium opacity-70 mb-1">الصلاة القادمة</div>
-          <div class="flex items-center gap-2">
-            <span class="text-sm font-bold" id="next-prayer-name">--</span>
-            <span class="text-xs opacity-70" id="next-prayer-time">--:--</span>
-          </div>
-        </div>
-      </div>
-      <!-- Tide Widget - Desktop/Large -->
-      <div id="tide-widget"
-        class="hidden 2xl:block bg-gradient-to-r from-ocean-blue/10 to-primary/10 backdrop-blur-sm px-4 py-3 rounded-xl border border-ocean-blue/20 max-w-xs">
-        <div class="flex items-start gap-3">
-          <span class="material-symbols-outlined text-ocean-blue text-2xl">waves</span>
-          <div class="text-right flex-1">
-            <div class="text-xs font-medium opacity-70 mb-1">حالة البحر</div>
-            <div class="text-sm font-bold mb-1" id="tide-status">--</div>
-            <div class="text-xs opacity-80" id="tide-next">--</div>
-            <div class="text-xs mt-1 px-2 py-1 rounded inline-block" id="swim-safety">--</div>
-          </div>
-        </div>
-      </div>
+      <!-- Complex widgets hidden for a cleaner look -->
+      <div id="weather-widget" class="hidden"></div>
+      <div id="prayer-widget" class="hidden"></div>
+      <!-- Desktop tide widget hidden to keep header clean like tablet -->
       <a href="#location"
         class="bg-primary hover:bg-primary/90 text-[#111818] px-6 py-2.5 rounded-lg font-bold text-sm transition-all shadow-lg shadow-primary/20">
         خطط لزيارتك
@@ -359,8 +323,8 @@
       </div>
     </section>
 
-    <!-- Mobile & Tablet Tide Info (Visible up to Desktop 'xl') -->
-    <section class="xl:hidden py-6 px-6 bg-gradient-to-r from-ocean-blue/5 to-primary/5">
+    <!-- Live Dashboard (Visible on All Screens: PC, Tablet & Mobile) -->
+    <section class="py-12 px-6 bg-gradient-to-r from-ocean-blue/5 to-primary/5">
       <div class="max-w-2xl mx-auto">
         <div id="mobile-tide-card"
           class="bg-white dark:bg-background-dark/80 backdrop-blur-xl rounded-[2.5rem] p-8 border-2 border-primary/10 shadow-2xl relative overflow-hidden group">
