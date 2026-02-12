@@ -232,11 +232,14 @@
         <span
           class="inline-block bg-primary/20 backdrop-blur-md text-primary border border-primary/30 px-6 py-2 rounded-full text-sm font-bold mb-8 animate-bounce">وجهتكم
           القادمة في عسير</span>
-        <h2 class="text-6xl md:text-8xl font-black text-white leading-tight mb-8 drop-shadow-2xl">
-          سحر <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-sunset-orange">الغروب</span>
-          <br />على ضفاف الحريضة
+        <h2
+          class="text-5xl md:text-8xl font-black mb-8 leading-[1.05] tracking-tight drop-shadow-[0_5px_15px_rgba(0,0,0,0.4)]">
+          سحر <span
+            class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-sunset-orange to-sunset-purple animate-gradient drop-shadow-none">الغروب</span>
+          <br>على ضفاف الحريضة
         </h2>
-        <p class="text-xl md:text-2xl text-white/90 mb-12 leading-relaxed max-w-2xl mx-auto drop-shadow-lg">
+        <p
+          class="text-xl md:text-2xl mb-12 text-white/95 max-w-2xl mx-auto leading-relaxed font-medium drop-shadow-[0_2px_10px_rgba(0,0,0,0.3)]">
           اكتشف مزيجاً خيالياً بين هدوء البحر الأحمر وروح المغامرة في أكبر واجهة بحرية في الجنوب.
         </p>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
@@ -380,12 +383,20 @@
                   <p class="text-xs text-slate-500 font-bold">الحريضة، عسير</p>
                 </div>
               </div>
-              <div class="text-right">
-                <div class="flex items-center justify-end gap-1">
-                  <span class="text-4xl font-black text-[#111818] dark:text-white" id="mobile-dashboard-temp">--</span>
-                  <span class="text-xl font-black text-primary">°C</span>
+              <div class="text-right group">
+                <div class="flex items-center justify-end gap-1 relative">
+                  <span class="text-4xl font-black text-[#111818] dark:text-white relative z-10"
+                    id="mobile-dashboard-temp">--</span>
+                  <span class="text-xl font-black text-primary relative z-10">°C</span>
+                  <!-- Premium Temperature Glow -->
+                  <div
+                    class="absolute inset-0 bg-primary/20 blur-xl rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity">
+                  </div>
                 </div>
-                <p class="text-[10px] font-bold text-primary uppercase tracking-widest mt-1">تحديث مباشر</p>
+                <p
+                  class="text-[10px] font-bold text-primary uppercase tracking-widest mt-1 flex items-center justify-end gap-1">
+                  <span class="w-1.5 h-1.5 bg-primary rounded-full animate-ping"></span> تحديث مباشر
+                </p>
               </div>
             </div>
 
