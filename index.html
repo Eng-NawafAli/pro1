@@ -1268,15 +1268,12 @@
       // Update prayer times every hour
       setInterval(fetchPrayerTimes, 3600000);
 
-      // Enhanced Tide Status Calculator with Swimming Safety
+      // --- Enhanced Tide & Swimming Safety ---
       function calculateTideStatus() {
         try {
           const now = new Date();
-          const hours = now.getHours();
-          const minutes = now.getMinutes();
-          const totalMinutes = hours * 60 + minutes;
+          const totalMinutes = now.getHours() * 60 + now.getMinutes();
 
-          // Red Sea tide times for Al-Haridah (semi-diurnal pattern)
           const tides = [
             { time: 2 * 60, type: 'high', label: 'المد العالي', timeStr: '02:00 صباحاً' },
             { time: 8 * 60 + 30, type: 'low', label: 'الجزر', timeStr: '08:30 صباحاً' },
@@ -1284,97 +1281,61 @@
             { time: 21 * 60, type: 'low', label: 'الجزر', timeStr: '09:00 مساءً' }
           ];
 
-          // Find current tide status
-          let currentStatus = '';
-          let nextTide = null;
-          let safetyStatus = '';
-          let safetyClass = '';
+          let currentStatus = '', nextTide = tides[0], safetyStatus = '', safetyClass = '';
 
-          // Find next tide
+          // Find next and current status
           for (let i = 0; i < tides.length; i++) {
             if (totalMinutes < tides[i].time) {
               nextTide = tides[i];
               break;
             }
           }
-          if (!nextTide) nextTide = tides[0]; // Next day's first tide
 
-          // Determine current status
-          for (let i = 0; i < tides.length; i++) {
-            const currentTide = tides[i];
-            const timeDiff = Math.abs(totalMinutes - currentTide.time);
-
-            if (timeDiff < 60) {
-              // Within 1 hour of tide peak
-              currentStatus = currentTide.type === 'high' ? '📈 مد عالي' : '📉 جزر منخفض';
-
-              if (currentTide.type === 'high') {
-                safetyStatus = '✅ وقت ممتاز للسباحة';
-                safetyClass = 'bg-green-100 text-green-700';
-              } else {
-                safetyStatus = '⚠️ احذر - مياه ضحلة';
-                safetyClass = 'bg-yellow-100 text-yellow-700';
-              }
+          // Search for near-peak status
+          for (const tide of tides) {
+            if (Math.abs(totalMinutes - tide.time) < 60) {
+              currentStatus = tide.type === 'high' ? '📈 مد عالي' : '📉 جزر منخفض';
+              safetyStatus = tide.type === 'high' ? '✅ وقت ممتاز للسباحة' : '⚠️ احذر - مياه ضحلة';
+              safetyClass = tide.type === 'high' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700';
               break;
             }
           }
 
-          // If not near a peak, determine if rising or falling
           if (!currentStatus) {
             const prevTide = tides.filter(t => t.time < totalMinutes).pop() || tides[tides.length - 1];
-            if (prevTide.type === 'low') {
-              currentStatus = '⬆️ مد صاعد';
-              safetyStatus = '✅ جيد للسباحة';
-              safetyClass = 'bg-green-100 text-green-700';
-            } else {
-              currentStatus = '⬇️ جزر نازل';
-              safetyStatus = '⚠️ توخى الحذر';
-              safetyClass = 'bg-orange-100 text-orange-700';
-            }
+            currentStatus = prevTide.type === 'low' ? '⬆️ مد صاعد' : '⬇️ جزر نازل';
+            safetyStatus = prevTide.type === 'low' ? '✅ جيد للسباحة' : '⚠️ توخى الحذر';
+            safetyClass = prevTide.type === 'low' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700';
           }
 
-          // Calculate time to next tide
-          let minutesToNext = nextTide.time - totalMinutes;
-          if (minutesToNext < 0) minutesToNext += 24 * 60;
-          const hoursToNext = Math.floor(minutesToNext / 60);
-          const minsToNext = minutesToNext % 60;
+          // Format next tide text
+          let diff = nextTide.time - totalMinutes;
+          if (diff < 0) diff += 1440;
+          const h = Math.floor(diff / 60), m = diff % 60;
+          const nextText = `${nextTide.label} ${nextTide.timeStr} (بعد ${h > 0 ? h + 'س ' : ''}${m}د)`;
 
-          let nextTideText = `${nextTide.label} ${nextTide.timeStr}`;
-          if (hoursToNext > 0) {
-            nextTideText += ` (بعد ${hoursToNext}س ${minsToNext}د)`;
-          } else if (minsToNext > 0) {
-            nextTideText += ` (بعد ${minsToNext}د)`;
+          // 1. Update Header Widgets (if visible)
+          const ts = document.getElementById('tide-status'), tn = document.getElementById('tide-next'), ss = document.getElementById('swim-safety');
+          if (ts) ts.textContent = currentStatus;
+          if (tn) tn.textContent = nextText;
+          if (ss) {
+            ss.textContent = safetyStatus;
+            ss.className = `text-xs mt-1 px-2 py-1 rounded inline-block font-bold ${safetyClass}`;
           }
 
-          // Update UI
-          document.getElementById('tide-status').textContent = currentStatus;
-          document.getElementById('tide-next').textContent = nextTideText;
-
-          const swimSafety = document.getElementById('swim-safety');
-          swimSafety.textContent = safetyStatus;
-          swimSafety.className = `text-xs mt-1 px-2 py-1 rounded inline-block font-bold ${safetyClass}`;
-
-          // Update mobile tide card
-          const mobileTideStatus = document.getElementById('mobile-tide-status');
-          const mobileTideNext = document.getElementById('mobile-tide-next');
-          const mobileSwimSafety = document.getElementById('mobile-swim-safety');
-
-          if (mobileTideStatus) mobileTideStatus.textContent = currentStatus;
-          if (mobileTideNext) mobileTideNext.textContent = nextTideText;
-          if (mobileSwimSafety) {
-            mobileSwimSafety.innerHTML = `<p class="font-bold text-sm text-center w-full">${safetyStatus}</p>`;
-            mobileSwimSafety.className = `p-4 rounded-xl text-center ${safetyClass} shadow-inner`;
+          // 2. Update Premium Dashboard Card
+          const mts = document.getElementById('mobile-tide-status'), mtn = document.getElementById('mobile-tide-next'), mss = document.getElementById('mobile-swim-safety');
+          if (mts) mts.textContent = currentStatus;
+          if (mtn) mtn.textContent = nextText;
+          if (mss) {
+            mss.innerHTML = `<p class="font-bold text-sm text-center w-full">${safetyStatus}</p>`;
+            mss.className = `p-4 rounded-xl text-center ${safetyClass} shadow-inner`;
           }
-        } catch (error) {
-          console.error('Error calculating tide:', error);
-        }
+        } catch (e) { console.error('Tide Logic Error:', e); }
       }
 
-      // Fetch tide on load
       calculateTideStatus();
-
-      // Update tide every 15 minutes
-      setInterval(calculateTideStatus, 900000);
+      setInterval(calculateTideStatus, 900000); // 15 mins
 
       // Star Rating Interactivity
       const starInputs = document.querySelectorAll('input[name="التقييم"]');
