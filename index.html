@@ -895,22 +895,48 @@
               </div>
             </div>
             <div class="mb-6">
-              <label class="block text-sm font-bold mb-2">تقييمك للزيارة</label>
-              <div class="flex gap-2">
-                <label class="flex items-center gap-2 cursor-pointer">
-                  <input type="radio" name="التقييم" value="⭐⭐⭐⭐⭐ ممتاز" required
-                    class="text-primary focus:ring-primary">
-                  <span>⭐⭐⭐⭐⭐</span>
+              <label class="block text-sm font-bold mb-4 text-slate-700 dark:text-slate-300">تقييمك لتجربة
+                الزيارة</label>
+              <div
+                class="flex flex-row-reverse justify-center gap-1 md:gap-4 bg-slate-50 dark:bg-background-dark/30 p-4 rounded-2xl border border-primary/10">
+                <!-- Star 5 -->
+                <input type="radio" id="star5" name="التقييم" value="5" class="hidden peer" required>
+                <label for="star5"
+                  class="cursor-pointer text-slate-300 hover:text-primary peer-checked:text-primary transition-colors">
+                  <span class="material-symbols-outlined text-3xl md:text-4xl"
+                    style="font-variation-settings: 'FILL' 1">star</span>
                 </label>
-                <label class="flex items-center gap-2 cursor-pointer">
-                  <input type="radio" name="التقييم" value="⭐⭐⭐⭐ جيد جداً" class="text-primary focus:ring-primary">
-                  <span>⭐⭐⭐⭐</span>
+                <!-- Star 4 -->
+                <input type="radio" id="star4" name="التقييم" value="4" class="hidden peer" />
+                <label for="star4"
+                  class="cursor-pointer text-slate-300 hover:text-primary peer-checked:text-primary peer-hover:text-primary transition-colors">
+                  <span class="material-symbols-outlined text-3xl md:text-4xl"
+                    style="font-variation-settings: 'FILL' 1">star</span>
                 </label>
-                <label class="flex items-center gap-2 cursor-pointer">
-                  <input type="radio" name="التقييم" value="⭐⭐⭐ جيد" class="text-primary focus:ring-primary">
-                  <span>⭐⭐⭐</span>
+                <!-- Star 3 -->
+                <input type="radio" id="star3" name="التقييم" value="3" class="hidden peer" />
+                <label for="star3"
+                  class="cursor-pointer text-slate-300 hover:text-primary peer-checked:text-primary peer-hover:text-primary transition-colors">
+                  <span class="material-symbols-outlined text-3xl md:text-4xl"
+                    style="font-variation-settings: 'FILL' 1">star</span>
+                </label>
+                <!-- Star 2 -->
+                <input type="radio" id="star2" name="التقييم" value="2" class="hidden peer" />
+                <label for="star2"
+                  class="cursor-pointer text-slate-300 hover:text-primary peer-checked:text-primary peer-hover:text-primary transition-colors">
+                  <span class="material-symbols-outlined text-3xl md:text-4xl"
+                    style="font-variation-settings: 'FILL' 1">star</span>
+                </label>
+                <!-- Star 1 -->
+                <input type="radio" id="star1" name="التقييم" value="1" class="hidden peer" />
+                <label for="star1"
+                  class="cursor-pointer text-slate-300 hover:text-primary peer-checked:text-primary peer-hover:text-primary transition-colors">
+                  <span class="material-symbols-outlined text-3xl md:text-4xl"
+                    style="font-variation-settings: 'FILL' 1">star</span>
                 </label>
               </div>
+              <div class="text-center mt-3 text-xs md:text-sm font-medium text-slate-500" id="rating-text">اضغط على
+                النجوم للتقييم</div>
             </div>
             <div class="mb-6">
               <label class="block text-sm font-bold mb-2">رسالتك</label>
@@ -1326,6 +1352,35 @@
       // Update tide every 15 minutes
       setInterval(calculateTideStatus, 900000);
 
+      // Star Rating Interactivity
+      const starInputs = document.querySelectorAll('input[name="التقييم"]');
+      const ratingText = document.getElementById('rating-text');
+      const ratingLabels = {
+        '5': '⭐⭐⭐⭐⭐ ممتاز جداً!',
+        '4': '⭐⭐⭐⭐ جيد جداً',
+        '3': '⭐⭐⭐ جيد',
+        '2': '⭐⭐ مقبول',
+        '1': '⭐ ضعيف'
+      };
+
+      starInputs.forEach(input => {
+        input.addEventListener('change', (e) => {
+          const val = e.target.value;
+          ratingText.textContent = ratingLabels[val];
+          ratingText.className = "text-center mt-3 text-sm font-bold text-primary animate-bounce";
+
+          // Color stars manually for better cross-browser support
+          starInputs.forEach(inp => {
+            const label = document.querySelector(`label[for="${inp.id}"]`);
+            if (parseInt(inp.value) <= parseInt(val)) {
+              label.style.color = '#13ecec';
+            } else {
+              label.style.color = '#cbd5e1';
+            }
+          });
+        });
+      });
+
       // Feedback Form AJAX Submission
       const feedbackForm = document.getElementById('feedback-form');
       if (feedbackForm) {
@@ -1342,6 +1397,13 @@
           try {
             // Submit form data
             const formData = new FormData(feedbackForm);
+
+            // Add rating label to submission for clarity
+            const ratingVal = formData.get('التقييم');
+            if (ratingVal) {
+              formData.set('التقييم', ratingLabels[ratingVal]);
+            }
+
             const response = await fetch(feedbackForm.action, {
               method: 'POST',
               body: formData,
@@ -1350,14 +1412,20 @@
               }
             });
 
-            // Show success message regardless of response
-            // (FormSubmit may redirect, so we handle it gracefully)
+            // Show success message
             document.getElementById('form-fields').classList.add('hidden');
             document.getElementById('success-message').classList.remove('hidden');
 
-            // Reset form after 3 seconds and show it again
+            // Reset form after 5 seconds
             setTimeout(() => {
               feedbackForm.reset();
+              // Reset stars
+              starInputs.forEach(inp => {
+                document.querySelector(`label[for="${inp.id}"]`).style.color = '#cbd5e1';
+              });
+              ratingText.textContent = "اضغط على النجوم للتقييم";
+              ratingText.className = "text-center mt-3 text-xs md:text-sm font-medium text-slate-500";
+
               document.getElementById('form-fields').classList.remove('hidden');
               document.getElementById('success-message').classList.add('hidden');
               submitBtn.disabled = false;
@@ -1366,7 +1434,6 @@
 
           } catch (error) {
             // Even if there's an error, the email likely went through
-            // FormSubmit might block AJAX responses for security
             document.getElementById('form-fields').classList.add('hidden');
             document.getElementById('success-message').classList.remove('hidden');
 
