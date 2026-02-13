@@ -383,75 +383,76 @@
                                 <p class="text-slate-500 text-xs">لا تضيع وقتك في الانتظار، حجزك يرسل فوراً لنظامنا.</p>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="glass p-10 rounded-[3rem] shadow-xl border border-primary/10">
-                        <!-- Update form action for FormSubmit.co -->
-                        <form id="bookingForm" class="space-y-6">
-                            <!-- Anti-spam and target setup -->
-                            <input type="hidden" name="_captcha" value="false">
-                            <input type="hidden" name="_subject" value="New Booking Request from Al-Haridha Web">
-                            <input type="hidden" name="_template" value="table">
+                        <div class="glass p-10 rounded-[3rem] shadow-xl border border-primary/10">
+                            <!-- Update form action for FormSubmit.co -->
+                            <form id="bookingForm" class="space-y-6" action="https://formsubmit.co/nwawf442@gmail.com"
+                                method="POST">
+                                <!-- Anti-spam and target setup -->
+                                <input type="hidden" name="_captcha" value="false">
+                                <input type="hidden" name="_subject" value="New Flight Booking Request">
+                                <input type="hidden" name="_template" value="table">
+                                <input type="text" name="_honey" style="display:none">
 
-                            <div class="grid md:grid-cols-2 gap-6">
-                                <input required name="name" type="text" placeholder="الاسم الكامل"
-                                    class="w-full bg-slate-100 dark:bg-white/10 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-primary font-bold text-sm" />
-                                <input required name="phone" type="tel" placeholder="رقم الجوال"
-                                    class="w-full bg-slate-100 dark:bg-white/10 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-primary font-bold text-sm" />
-                            </div>
-                            <div class="space-y-4">
-                                <label
-                                    class="text-sm font-bold text-slate-800 dark:text-white block px-2 tracking-tight">التاريخ</label>
-                                <div class="space-y-3">
-                                    <input required name="date" type="date" id="date_input"
+                                <div class="grid md:grid-cols-2 gap-6">
+                                    <input required name="الاسم" type="text" placeholder="الاسم الكامل"
                                         class="w-full bg-slate-100 dark:bg-white/10 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-primary font-bold text-sm" />
-                                    <div class="flex gap-2">
-                                        <button type="button" onclick="setDateQuickly(0)"
-                                            class="flex-1 py-2 rounded-xl bg-primary/5 border border-primary/20 text-primary font-bold text-[10px] hover:bg-primary hover:text-white transition-all">اليوم</button>
-                                        <button type="button" onclick="setDateQuickly(1)"
-                                            class="flex-1 py-2 rounded-xl bg-primary/5 border border-primary/20 text-primary font-bold text-[10px] hover:bg-primary hover:text-white transition-all">غداً</button>
+                                    <input required name="الجوال" type="tel" placeholder="رقم الجوال"
+                                        class="w-full bg-slate-100 dark:bg-white/10 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-primary font-bold text-sm" />
+                                </div>
+                                <div class="space-y-4">
+                                    <label
+                                        class="text-sm font-bold text-slate-800 dark:text-white block px-2 tracking-tight">التاريخ</label>
+                                    <div class="space-y-3">
+                                        <input required name="التاريخ" type="date" id="date_input"
+                                            class="w-full bg-slate-100 dark:bg-white/10 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-primary font-bold text-sm" />
+                                        <div class="flex gap-2">
+                                            <button type="button" onclick="setDateQuickly(0)"
+                                                class="flex-1 py-2 rounded-xl bg-primary/5 border border-primary/20 text-primary font-bold text-[10px] hover:bg-primary hover:text-white transition-all">اليوم</button>
+                                            <button type="button" onclick="setDateQuickly(1)"
+                                                class="flex-1 py-2 rounded-xl bg-primary/5 border border-primary/20 text-primary font-bold text-[10px] hover:bg-primary hover:text-white transition-all">غداً</button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div class="space-y-4">
-                                <label
-                                    class="text-sm font-bold text-slate-800 dark:text-white block px-2 tracking-tight">الباقة</label>
-                                <select required name="flight_type" id="flight_type_select"
-                                    class="w-full bg-slate-100 dark:bg-white/10 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-primary font-bold text-sm">
-                                    <option value="Gyro-Copter">جايروكوبتر (300 ريال)</option>
-                                    <option value="Trike">ترايك (200 ريال)</option>
-                                </select>
-                            </div>
+                                <div class="space-y-4">
+                                    <label
+                                        class="text-sm font-bold text-slate-800 dark:text-white block px-2 tracking-tight">الباقة</label>
+                                    <select required name="الباقة_المختارة" id="flight_type_select"
+                                        class="w-full bg-slate-100 dark:bg-white/10 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-primary font-bold text-sm">
+                                        <option value="جايروكوبتر">جايروكوبتر (300 ريال)</option>
+                                        <option value="ترايك">ترايك (200 ريال)</option>
+                                    </select>
+                                </div>
 
-                            <!-- Success Message Overlay -->
-                            <div id="formSuccess"
-                                class="hidden p-4 rounded-xl bg-green-500/10 text-green-500 text-center font-bold text-[11px] leading-tight flex flex-col gap-1 items-center">
-                                <span class="material-icons text-lg">check_circle</span>
-                                <div>تم إرسال طلبك بنجاح! سنتواصل معك قريباً.</div>
-                                <div class="text-[9px] opacity-60">* يرجى التحقق من تواصلنا معك عبر الواتساب.</div>
-                            </div>
+                                <!-- Success Message Overlay -->
+                                <div id="formSuccess"
+                                    class="hidden p-4 rounded-xl bg-green-500/10 text-green-500 text-center font-bold text-[11px] leading-tight flex flex-col gap-1 items-center">
+                                    <span class="material-icons text-lg">check_circle</span>
+                                    <div>تم إرسال طلبك بنجاح! سنتواصل معك قريباً.</div>
+                                    <div class="text-[9px] opacity-60">* يرجى التحقق من تواصلنا معك عبر الواتساب.</div>
+                                </div>
 
-                            <div id="formError"
-                                class="hidden p-4 rounded-xl bg-red-500/10 text-red-500 text-center font-bold text-[11px]">
-                                عذراً، حدث خطأ أثناء الإرسال. يرجى المحاولة لاحقاً.
-                            </div>
+                                <div id="formError"
+                                    class="hidden p-4 rounded-xl bg-red-500/10 text-red-500 text-center font-bold text-[11px]">
+                                    عذراً، حدث خطأ أثناء الإرسال. يرجى المحاولة لاحقاً.
+                                </div>
 
-                            <button type="submit" id="submitBtn"
-                                class="w-full bg-primary text-white py-4 rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform text-lg flex items-center justify-center gap-3">
-                                <span id="btnText">إرسال الطلب</span>
-                                <span id="btnIcon" class="material-icons text-xl">send</span>
-                            </button>
+                                <button type="submit" id="submitBtn"
+                                    class="w-full bg-primary text-white py-4 rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform text-lg flex items-center justify-center gap-3">
+                                    <span id="btnText">إرسال الطلب</span>
+                                    <span id="btnIcon" class="material-icons text-xl">send</span>
+                                </button>
 
-                            <a href="https://wa.me/966550066463"
-                                class="w-full bg-[#25D366] text-white py-4 rounded-2xl font-bold text-center flex items-center justify-center gap-3 hover:opacity-90 transition-opacity">
-                                <span class="material-symbols-outlined">chat</span>
-                                تواصل مباشر واتساب
-                            </a>
-                        </form>
+                                <a href="https://wa.me/966550066463"
+                                    class="w-full bg-[#25D366] text-white py-4 rounded-2xl font-bold text-center flex items-center justify-center gap-3 hover:opacity-90 transition-opacity">
+                                    <span class="material-symbols-outlined">chat</span>
+                                    تواصل مباشر واتساب
+                                </a>
+                            </form>
+                        </div>
                     </div>
                 </div>
-            </div>
         </section>
     </main>
 
@@ -478,7 +479,7 @@
                                 المملكة العربية السعودية</span></li>
                         <li class="flex items-center gap-4"><span
                                 class="material-icons text-primary text-lg">email</span><a
-                                href="mailto:nwawf44@gmail.com" class="hover:text-white">nwawf44@gmail.com</a>
+                                href="mailto:nwawf442@gmail.com" class="hover:text-white">nwawf442@gmail.com</a>
                         </li>
                         <li class="flex items-center gap-4 group cursor-pointer"><span
                                 class="material-icons text-primary text-lg">call</span><span
@@ -614,7 +615,7 @@
 
             try {
                 const formData = new FormData(this);
-                const response = await fetch("https://formsubmit.co/ajax/nwawf44@gmail.com", {
+                const response = await fetch(this.action, {
                     method: "POST",
                     body: formData,
                     headers: {
