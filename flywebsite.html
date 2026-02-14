@@ -750,6 +750,13 @@
 
             try {
                 const formData = new FormData(this);
+
+                // --- Email Management Logic ---
+                // Dynamic Subject for better inbox management
+                const customerName = formData.get('الاسم') || "Visitor";
+                formData.set('_subject', `New Flight Booking: ${customerName}`);
+                // ------------------------------
+
                 const response = await fetch(this.action, {
                     method: "POST",
                     body: formData,
@@ -760,23 +767,6 @@
 
                 if (response.ok) {
                     successMsg.classList.remove('hidden');
-
-                    // --- WhatsApp Dual Send Logic ---
-                    // Capture data for WhatsApp message
-                    const name = formData.get('الاسم');
-                    const phone = formData.get('رقم_الجوال');
-                    const packageChosen = formData.get('الباقة_المختارة');
-                    const date = formData.get('تاريخ_الرحلة');
-
-                    const waMessage = `حجز جديد من الموقع! 🛩️\n\n*الاسم:* ${name}\n*الجوال:* ${phone}\n*الباقة:* ${packageChosen}\n*التاريخ:* ${date}`;
-                    const waUrl = `https://wa.me/966550066463?text=${encodeURIComponent(waMessage)}`;
-
-                    // Open WhatsApp in a new tab after a brief delay for UX
-                    setTimeout(() => {
-                        window.open(waUrl, '_blank');
-                    }, 1000);
-                    // --------------------------------
-
                     this.reset();
                 } else {
                     errorMsg.classList.remove('hidden');

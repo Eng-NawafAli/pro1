@@ -1476,6 +1476,12 @@
             // Submit form data
             const formData = new FormData(feedbackForm);
 
+            // --- Email Management Logic ---
+            // Dynamic Subject for better inbox management
+            const customerName = formData.get('الاسم') || "Visitor";
+            formData.set('_subject', `New Feedback: ${customerName}`);
+            // ------------------------------
+
             // Add rating label to submission for clarity
             const ratingVal = formData.get('التقييم');
             if (ratingVal) {
