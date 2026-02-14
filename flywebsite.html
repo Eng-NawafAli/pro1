@@ -120,9 +120,9 @@
                 </nav>
 
                 <div class="flex items-center gap-5">
-                    <div class="hidden md:flex flex-col items-end mr-4">
+                    <div class="flex flex-col items-end md:mr-4">
                         <div id="live-status-badge"
-                            class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-[9px] font-black uppercase tracking-tighter transition-all">
+                            class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-[9px] font-black uppercase tracking-tighter transition-all whitespace-nowrap">
                             <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
                             جاري التحقق...
                         </div>
@@ -275,15 +275,19 @@
                     <span class="text-xs font-bold text-slate-400 uppercase mr-3 tracking-widest">سرعة الرياح:</span>
                     <span id="stat-wind" class="text-sm font-bold tracking-tight">-- كم/س</span>
                 </div>
-                <!-- Business Hours Tablet/Desktop -->
-                <div class="hidden lg:flex flex-col items-center">
-                    <span class="text-slate-400 text-[8px] font-black uppercase tracking-[0.2em] mb-1">أوقات الطيران
+                <div class="h-8 w-px bg-white/10 hidden md:block"></div>
+                <div class="flex flex-col items-center text-center">
+                    <span class="text-slate-400 text-[9px] font-black uppercase tracking-[0.2em] mb-2">أوقات التحليق
                         اليوم</span>
-                    <div class="flex gap-4 text-[11px] font-bold text-ltr">
-                        <span class="flex items-center gap-1"><span class="w-1 h-3 bg-primary/30 rounded-full"></span>
-                            6:00 - 10:30 AM</span>
-                        <span class="flex items-center gap-1"><span class="w-1 h-3 bg-primary/30 rounded-full"></span>
-                            3:30 - 7:30 PM</span>
+                    <div class="grid grid-cols-2 gap-3 text-[10px] font-bold text-ltr">
+                        <div class="bg-primary/5 px-3 py-2 rounded-xl border border-primary/10">
+                            <p class="text-primary text-[8px] mb-1">الصباحية</p>
+                            <span>6:00 - 10:30 AM</span>
+                        </div>
+                        <div class="bg-primary/5 px-3 py-2 rounded-xl border border-primary/10">
+                            <p class="text-primary text-[8px] mb-1">المسائية</p>
+                            <span>3:30 - 7:30 PM</span>
+                        </div>
                     </div>
                 </div>
                 <div class="h-8 w-px bg-white/10 hidden md:block"></div>
