@@ -515,90 +515,104 @@
         </div>
     </footer>
 
-    <script shadow>
-        // Weather Integration
-        async function fetchWeather() {
-            try {
-                const lat = 17.89, lon = 41.68; // Al-Haridha
-                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,wind_speed_10m,weather_code`);
-                const data = await res.json();
+    // Weather Integration
+    async function fetchWeather() {
+    try {
+    // Al-Haridha coordinates unified
+    const lat = 17.8546, lon = 41.9162;
+    const res = await
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,wind_speed_10m,weather_code,is_day&timezone=Asia/Riyadh`);
+    const data = await res.json();
 
-                const temp = Math.round(data.current.temperature_2m);
-                const wind = data.current.wind_speed_10m;
-                const code = data.current.weather_code;
+    if (data && data.current) {
+    const temp = Math.round(data.current.temperature_2m);
+    const wind = Math.round(data.current.wind_speed_10m);
+    const code = data.current.weather_code;
+    const isDay = data.current.is_day;
 
-                document.getElementById('temp').innerText = `${temp}°م`;
-                document.getElementById('stat-temp').innerText = `${temp}°م`;
-                document.getElementById('stat-wind').innerText = `${wind} كم/س`;
+    document.getElementById('temp').innerText = `${temp}°م`;
+    document.getElementById('stat-temp').innerText = `${temp}°م`;
+    document.getElementById('stat-wind').innerText = `${wind} كم/س`;
 
-                let icon = "wb_sunny";
-                if (code > 0) icon = "cloud_queue";
-                if (code > 50) icon = "water_drop";
-                document.getElementById('weather-icon').innerText = icon;
-                document.getElementById('stat-icon').innerText = icon;
+    // Update Icons
+    let icon = isDay ? "wb_sunny" : "nightlight_round";
+    if (code > 0) icon = "cloud_queue";
+    if (code > 50) icon = "water_drop";
 
-                const indicator = document.getElementById('safety-indicator');
-                if (wind > 20 || code > 50) {
-                    indicator.innerHTML = '<span class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span> الأجواء قد لا تسمح بالطيران حالياً';
-                    indicator.className = "px-5 py-2 rounded-full bg-red-500/10 text-red-500 border border-red-500/20 text-[11px] font-black tracking-wide flex items-center gap-2";
-                }
-            } catch (e) { console.error("Weather error", e); }
-        }
-        fetchWeather();
+    const weatherIcon = document.getElementById('weather-icon');
+    const statIcon = document.getElementById('stat-icon');
 
-        // Package Selection Helper
-        function selectPackage(type) {
-            const select = document.querySelector('select[name="الباقة_المختارة"]');
-            if (select) {
-                // Map English type from button to Arabic value in select
-                if (type === 'Gyro-Copter') select.value = 'جايروكوبتر';
-                else if (type === 'Trike') select.value = 'ترايك';
+    if (weatherIcon) {
+    weatherIcon.innerText = icon;
+    weatherIcon.className = `material-icons ${isDay ? 'text-primary' : 'text-indigo-400'} text-lg`;
+    }
+    if (statIcon) statIcon.innerText = icon;
 
-                // Scroll to booking form
-                document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
-            }
-        }
+    // Safety Indicator
+    const indicator = document.getElementById('safety-indicator');
+    if (wind > 20 || code > 50) {
+    indicator.innerHTML = '<span class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span> الأجواء قد لا تسمح
+    بالطيران حالياً';
+    indicator.className = "px-5 py-2 rounded-full bg-red-500/10 text-red-500 border border-red-500/20 text-[11px]
+    font-black tracking-wide flex items-center gap-2";
+    } else {
+    indicator.innerHTML = '<span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> الأجواء مناسبة جداً
+    للطيران';
+    indicator.className = "px-5 py-2 rounded-full bg-green-500/10 text-green-500 border border-green-500/20 text-[11px]
+    font-black tracking-wide flex items-center gap-2";
+    }
+    }
+    } catch (e) { console.error("Weather error", e); }
+    }
+    fetchWeather();
+    setInterval(fetchWeather, 600000); // Update every 10 minutes
 
-        // Date Helpers
-        function setDateQuickly(daysOffset) {
-            const dt = new Date();
-            dt.setDate(dt.getDate() + daysOffset);
-            document.getElementById('date_input').value = dt.toISOString().split('T')[0];
-        }
+    // Package Selection Helper
+    function selectPackage(type) {
+    const select = document.querySelector('select[name="الباقة_المختارة"]');
+    if (select) {
+    // Map English type from button to Arabic value in select
+    if (type === 'Gyro-Copter') select.value = 'جايروكوبتر';
+    else if (type === 'Trike') select.value = 'ترايك';
 
-        // Business Status Logic
-        function updateBusinessStatus() {
-            const now = new Date();
-            const hour = now.getHours();
-            const min = now.getMinutes();
-            const timeVal = hour + min / 60;
+    // Scroll to booking form
+    document.getElementById('booking').scrollIntoView({ behavior: 'smooth' });
+    }
+    }
 
-            const badge = document.getElementById('live-status-badge');
+    // Date Helpers
+    function setDateQuickly(daysOffset) {
+    const dt = new Date();
+    dt.setDate(dt.getDate() + daysOffset);
+    document.getElementById('date_input').value = dt.toISOString().split('T')[0];
+    }
 
-            // Morning: 06:00 - 10:30, Afternoon: 15:30 - 19:30
-            const isOpen = (timeVal >= 6 && timeVal <= 10.5) || (timeVal >= 15.5 && timeVal <= 19.5);
+    // Business Status Logic
+    function updateBusinessStatus() {
+    const now = new Date();
+    const hour = now.getHours();
+    const min = now.getMinutes();
+    const timeVal = hour + min / 60;
 
-            if (isOpen) {
-                badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> مفتوح الآن';
-                badge.className = "flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/10 text-green-600 text-[9px] font-black uppercase tracking-tighter border border-green-500/20";
-            } else {
-                badge.innerHTML = '<span class="w-1.5 h-1.5 rounded-full bg-red-400"></span> مغلق حالياً';
-                badge.className = "flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/10 text-red-600 text-[9px] font-black uppercase tracking-tighter border border-red-500/20";
-            }
-        }
+    const badge = document.getElementById('live-status-badge');
 
-        // Initialize Form Constraints & Status
-        window.addEventListener('load', () => {
+    // Morning: 06:00 - 10:30, Afternoon: 15:30 - 19:30
+    const isOpen = (timeVal >= 6 && timeVal <= 10.5) || (timeVal>= 15.5 && timeVal <= 19.5); if (isOpen) {
+            badge.innerHTML='<span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> مفتوح الآن' ;
+            badge.className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-500/10 text-green-600 text-[9px] font-black uppercase tracking-tighter border border-green-500/20"
+            ; } else { badge.innerHTML='<span class="w-1.5 h-1.5 rounded-full bg-red-400"></span> مغلق حالياً' ;
+            badge.className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/10 text-red-600 text-[9px] font-black uppercase tracking-tighter border border-red-500/20"
+            ; } } // Initialize Form Constraints & Status window.addEventListener('load', ()=> {
             const dateInput = document.getElementById('date_input');
             if (dateInput) {
-                dateInput.min = new Date().toISOString().split('T')[0];
+            dateInput.min = new Date().toISOString().split('T')[0];
             }
             updateBusinessStatus();
             setInterval(updateBusinessStatus, 60000); // Check every minute
-        });
+            });
 
-        // Form Submission Logic using FormSubmit AJAX
-        document.getElementById('bookingForm').addEventListener('submit', async function (e) {
+            // Form Submission Logic using FormSubmit AJAX
+            document.getElementById('bookingForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const submitBtn = document.getElementById('submitBtn');
@@ -618,34 +632,34 @@
             successMsg.classList.add('hidden');
 
             try {
-                const formData = new FormData(this);
-                const response = await fetch(this.action, {
-                    method: "POST",
-                    body: formData,
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                });
-
-                if (response.ok) {
-                    successMsg.classList.remove('hidden');
-                    this.reset();
-                } else {
-                    errorMsg.classList.remove('hidden');
-                }
-            } catch (error) {
-                console.error("Submission Error:", error);
-                errorMsg.classList.remove('hidden');
-            } finally {
-                // Reset button state
-                submitBtn.disabled = false;
-                submitBtn.style.opacity = '1';
-                btnText.innerText = 'إرسال الطلب';
-                btnIcon.innerText = 'send';
-                btnIcon.classList.remove('animate-spin');
+            const formData = new FormData(this);
+            const response = await fetch(this.action, {
+            method: "POST",
+            body: formData,
+            headers: {
+            'Accept': 'application/json'
             }
-        });
-    </script>
+            });
+
+            if (response.ok) {
+            successMsg.classList.remove('hidden');
+            this.reset();
+            } else {
+            errorMsg.classList.remove('hidden');
+            }
+            } catch (error) {
+            console.error("Submission Error:", error);
+            errorMsg.classList.remove('hidden');
+            } finally {
+            // Reset button state
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+            btnText.innerText = 'إرسال الطلب';
+            btnIcon.innerText = 'send';
+            btnIcon.classList.remove('animate-spin');
+            }
+            });
+            </script>
 </body>
 
 </html>
