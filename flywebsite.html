@@ -542,11 +542,76 @@
             </div>
 
             <div
-                class="mt-20 pt-8 border-t border-white/5 text-center text-[10px] text-slate-600 font-bold tracking-[0.2em] uppercase">
-                © 2024 AL HARIDHA AVIATION CLUB. ALL RIGHTS RESERVED.
+                class="mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] text-slate-600 font-bold tracking-[0.2em] uppercase">
+                <div>© 2024 AL HARIDHA AVIATION CLUB. ALL RIGHTS RESERVED.</div>
+                <div class="flex gap-8">
+                    <a href="#" onclick="event.preventDefault(); openTerms();"
+                        class="hover:text-primary transition-colors">الشروط والأحكام</a>
+                    <a href="#" class="hover:text-primary transition-colors">سياسة الخصوصية</a>
+                </div>
             </div>
         </div>
     </footer>
+
+    <!-- Terms & Conditions Modal -->
+    <div id="termsModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-6">
+        <div class="absolute inset-0 bg-background-dark/80 backdrop-blur-md" onclick="closeTerms()"></div>
+        <div
+            class="relative bg-white/10 backdrop-blur-2xl border border-white/10 w-full max-w-2xl rounded-[2.5rem] overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-300">
+            <div class="p-8 md:p-12">
+                <div class="flex justify-between items-center mb-10">
+                    <h3 class="text-2xl font-black text-white">الشروط والأحكام</h3>
+                    <button onclick="closeTerms()" class="p-2 hover:bg-white/10 rounded-full transition-colors">
+                        <span class="material-icons text-white">close</span>
+                    </button>
+                </div>
+
+                <div
+                    class="space-y-8 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar text-white/80 leading-loose text-sm text-right rtl">
+                    <section class="space-y-4">
+                        <h4 class="text-primary font-bold text-lg flex items-center gap-3">
+                            <span class="w-8 h-[2px] bg-primary"></span>
+                            تعليمات السلامة
+                        </h4>
+                        <p>تعتبر تعليمات كابتن الطائرة نهائية وملزمة لجميع الركاب لضمان سلامتهم. يجب الالتزام بارتداء
+                            حزام الأمان وسماعات إلغاء الضوضاء طوال فترة الرحلة.</p>
+                    </section>
+
+                    <section class="space-y-4">
+                        <h4 class="text-primary font-bold text-lg flex items-center gap-3">
+                            <span class="w-8 h-[2px] bg-primary"></span>
+                            المتطلبات الصحية
+                        </h4>
+                        <p>يقر العميل بأنه لا يعاني من مشاكل حادة في القلب أو الدوار الشديد أو الصرع. الوزن الأقصى
+                            المسموح به للراكب الواحد هو 110 كجم.</p>
+                    </section>
+
+                    <section class="space-y-4">
+                        <h4 class="text-primary font-bold text-lg flex items-center gap-3">
+                            <span class="w-8 h-[2px] bg-primary"></span>
+                            الإلغاء والجدولة
+                        </h4>
+                        <p>يمكن إلغاء أو إعادة جدولة الرحلة قبل 24 ساعة من الموعد المحدد. في حال الإلغاء المتأخر، قد يتم
+                            خصم رسوم إدارية.</p>
+                    </section>
+
+                    <section class="space-y-4">
+                        <h4 class="text-primary font-bold text-lg flex items-center gap-3">
+                            <span class="w-8 h-[2px] bg-primary"></span>
+                            الظروف الجوية
+                        </h4>
+                        <p>سلامة الطيران هي أولويتنا القصوى. يحق للطيار تأجيل أو إلغاء أي رحلة في حال كانت الظروف الجوية
+                            غير مناسبة، وسيتم إعادة الجدولة دون رسوم إضافية.</p>
+                    </section>
+                </div>
+
+                <button onclick="closeTerms()"
+                    class="mt-10 w-full bg-primary text-background-dark font-black py-4 rounded-2xl hover:scale-[1.02] transition-transform">
+                    فهمت وأوافق
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script>
         // Mobile Menu Toggle
@@ -695,6 +760,23 @@
 
                 if (response.ok) {
                     successMsg.classList.remove('hidden');
+
+                    // --- WhatsApp Dual Send Logic ---
+                    // Capture data for WhatsApp message
+                    const name = formData.get('الاسم');
+                    const phone = formData.get('رقم_الجوال');
+                    const packageChosen = formData.get('الباقة_المختارة');
+                    const date = formData.get('تاريخ_الرحلة');
+
+                    const waMessage = `حجز جديد من الموقع! 🛩️\n\n*الاسم:* ${name}\n*الجوال:* ${phone}\n*الباقة:* ${packageChosen}\n*التاريخ:* ${date}`;
+                    const waUrl = `https://wa.me/966550066463?text=${encodeURIComponent(waMessage)}`;
+
+                    // Open WhatsApp in a new tab after a brief delay for UX
+                    setTimeout(() => {
+                        window.open(waUrl, '_blank');
+                    }, 1000);
+                    // --------------------------------
+
                     this.reset();
                 } else {
                     errorMsg.classList.remove('hidden');
@@ -711,6 +793,19 @@
                 btnIcon.classList.remove('animate-spin');
             }
         });
+
+        // Terms Modal Functions
+        function openTerms() {
+            const modal = document.getElementById('termsModal');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeTerms() {
+            const modal = document.getElementById('termsModal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
     </script>
 </body>
 
