@@ -44,7 +44,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const urlParams = new URLSearchParams(window.location.search);
-        const bookingId = urlParams.get('id');
+        const bookingId = urlParams.get('qr');
 
         async function verify() {
             if (!bookingId) {

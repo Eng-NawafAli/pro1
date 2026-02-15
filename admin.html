@@ -4,58 +4,237 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>لوحة التحكم | نادي الحريضة</title>
+    <title>مركز القيادة | نادي الحريضة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Noto+Sans+Arabic:wght@400;700;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --accent: #f43f5e;
+            --bg-dark: #0f172a;
+        }
+
         body {
-            font-family: 'Noto Sans Arabic', sans-serif;
+            font-family: 'Noto Sans Arabic', 'Outfit', sans-serif;
+            background-color: var(--bg-dark);
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .animate-gradient {
+            background: linear-gradient(-45deg, #0f172a, #1e1b4b, #312e81, #1e1b4b);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-weight: 900;
+            font-size: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .paid {
+            background: #059669;
+            color: white;
+            box-shadow: 0 0 15px rgba(5, 150, 105, 0.3);
+        }
+
+        .pending {
+            background: #d97706;
+            color: white;
+            box-shadow: 0 0 15px rgba(217, 119, 6, 0.3);
+        }
+
+        .completed {
+            background: #4f46e5;
+            color: white;
+            box-shadow: 0 0 15px rgba(79, 70, 229, 0.3);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .toast-enter {
+            transform: translateY(-100px);
+            opacity: 0;
+        }
+
+        .toast-visible {
+            transform: translateY(0);
+            opacity: 1;
         }
     </style>
 </head>
 
-<body class="bg-gray-50 flex items-center justify-center min-h-screen">
-    <div id="login-container" class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
-        <h1 class="text-2xl font-bold mb-6 text-center text-indigo-900">دخول الإدارة</h1>
-        <form id="login-form" class="space-y-4">
-            <input type="email" id="email" placeholder="البريد الإلكتروني" class="w-full p-4 border rounded-xl"
-                required />
-            <input type="password" id="password" placeholder="كلمة المرور" class="w-full p-4 border rounded-xl"
-                required />
-            <button type="submit"
-                class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold hover:bg-indigo-700 transition-all">دخول</button>
-            <button type="button" onclick="resetPassword()"
-                class="text-sm text-indigo-600 font-bold block mx-auto mt-2">نسيت كلمة المرور؟</button>
-        </form>
+<body class="animate-gradient min-h-screen">
+    <!-- Toast Notification System -->
+    <div id="toast-container"
+        class="fixed top-6 right-6 left-6 z-[100] flex flex-col items-center gap-3 pointer-events-none"></div>
+
+    <!-- Audio Settings (Hidden) -->
+    <audio id="notification-sound" preload="auto">
+        <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Login Section -->
+    <div id="login-container" class="flex items-center justify-center min-h-screen p-6">
+        <div class="glass p-10 rounded-[2.5rem] w-full max-w-md shadow-2xl relative overflow-hidden group">
+            <div
+                class="absolute -top-24 -right-24 w-48 h-48 bg-primary/20 rounded-full blur-3xl group-hover:bg-primary/30 transition-all">
+            </div>
+
+            <div class="relative z-10 text-center space-y-8">
+                <div
+                    class="w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center mx-auto border border-primary/20">
+                    <span class="material-icons text-primary text-4xl">terminal</span>
+                </div>
+                <div class="space-y-2">
+                    <h1 class="text-3xl font-black tracking-tight text-white uppercase italic">Command Center</h1>
+                    <p class="text-slate-400 text-sm font-bold">بوابة إدارة نادي الحريضة للطيران</p>
+                </div>
+
+                <form id="login-form" class="space-y-4">
+                    <div class="relative group">
+                        <span
+                            class="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xl group-focus-within:text-primary transition-colors">email</span>
+                        <input type="email" id="email" placeholder="البريد الإلكتروني"
+                            class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-white text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                            required />
+                    </div>
+                    <div class="relative group">
+                        <span
+                            class="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-xl group-focus-within:text-primary transition-colors">lock</span>
+                        <input type="password" id="password" placeholder="كلمة المرور"
+                            class="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-6 text-white text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                            required />
+                    </div>
+                    <button type="submit" id="login-btn"
+                        class="w-full bg-primary hover:bg-primary-light text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all flex items-center justify-center gap-2 group">
+                        <span>دخول النظام</span>
+                        <span
+                            class="material-icons text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 
-    <div id="dashboard-container" class="hidden w-full max-w-6xl p-6">
-        <div class="flex justify-between items-center mb-10">
-            <h1 class="text-3xl font-black text-indigo-900">إدارة الحجوزات</h1>
-            <button onclick="logout()" class="text-red-500 font-bold">خروج</button>
+    <!-- Dashboard Section -->
+    <div id="dashboard-container" class="hidden min-h-screen p-6 md:p-10 space-y-10 max-w-7xl mx-auto">
+        <!-- Dashboard Header -->
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div class="flex items-center gap-5">
+                <div
+                    class="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/30">
+                    <span class="material-icons text-white text-3xl">flight</span>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-black text-white italic">DASHBOARD</h1>
+                    <p class="text-green-500 text-xs font-bold flex items-center gap-1">
+                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                        نظام المراقبة المباشر يعمل
+                    </p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="logout()"
+                    class="glass px-6 py-3 rounded-xl text-xs font-black text-slate-400 hover:text-red-500 hover:border-red-500/30 transition-all flex items-center gap-2">
+                    <span class="material-icons text-sm">logout</span>
+                    خروج آمن
+                </button>
+            </div>
+        </header>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div class="glass p-6 rounded-[2rem] border-l-4 border-primary space-y-1">
+                <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">إجمالي الحجوزات</p>
+                <h2 id="stat-total" class="text-3xl font-black">--</h2>
+            </div>
+            <div class="glass p-6 rounded-[2rem] border-l-4 border-green-500 space-y-1">
+                <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">حجوزات مدفوعة</p>
+                <h2 id="stat-paid" class="text-3xl font-black text-green-500">--</h2>
+            </div>
+            <div class="glass p-6 rounded-[2rem] border-l-4 border-amber-500 space-y-1">
+                <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">بانتظار الدفع</p>
+                <h2 id="stat-pending" class="text-3xl font-black text-amber-500">--</h2>
+            </div>
+            <div class="glass p-6 rounded-[2rem] border-l-4 border-indigo-400 space-y-1">
+                <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">الأرباح التقديرية (SAR)</p>
+                <h2 id="stat-revenue" class="text-3xl font-black text-indigo-400">--</h2>
+            </div>
         </div>
 
-        <div class="bg-white rounded-3xl shadow-sm border overflow-hidden">
-            <table class="w-full text-right">
-                <thead class="bg-gray-50 border-b">
-                    <tr>
-                        <th class="p-6">العميل</th>
-                        <th class="p-6">التاريخ والوقت</th>
-                        <th class="p-6">الباقة</th>
-                        <th class="p-6">الحالة</th>
-                        <th class="p-6">الإجراءات</th>
-                    </tr>
-                </thead>
-                <tbody id="bookings-list">
-                    <!-- Data will load here -->
-                </tbody>
-            </table>
+        <!-- Bookings Content -->
+        <div class="glass rounded-[2.5rem] overflow-hidden shadow-2xl">
+            <div class="p-8 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
+                <h3 class="text-lg font-black italic">LIVE LOGS</h3>
+                <div class="text-[10px] font-bold text-slate-500 px-3 py-1 bg-white/5 rounded-full">آخر 50 حجز</div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-right border-collapse">
+                    <thead>
+                        <tr
+                            class="text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-white/5">
+                            <th class="p-6">المعلومات الشخصية</th>
+                            <th class="p-6">جدول الرحلة</th>
+                            <th class="p-6">الباقة</th>
+                            <th class="p-6 text-center">الحالة والـ QR</th>
+                            <th class="p-6">التحكم</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bookings-list">
+                        <!-- Data will load here -->
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
     <script>
-        // Initialize Supabase
         const SUPABASE_URL = 'https://ycknumkbdltbdkhmeyqp.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlja251bWtiZGx0YmRraG1leXFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExMTk3MTAsImV4cCI6MjA4NjY5NTcxMH0.BNCTfaqsul1LkDbG0PyOd63rYZCThUjGxAhgNMnda6w';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -63,27 +242,35 @@
         const loginForm = document.getElementById('login-form');
         const loginContainer = document.getElementById('login-container');
         const dashboardContainer = document.getElementById('dashboard-container');
+        const listContainer = document.getElementById('bookings-list');
+
+        let audio = document.getElementById('notification-sound');
+
+        // Check active session
+        async function checkSession() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) showDashboard();
+        }
+        checkSession();
 
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const emailVal = document.getElementById('email').value;
             const passVal = document.getElementById('password').value;
+            const btn = document.getElementById('login-btn');
 
-            const submitBtn = e.target.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerText;
-            submitBtn.innerText = 'جاري التحقق...';
-            submitBtn.disabled = true;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="animate-spin material-icons">sync</span>';
 
-            console.log("Attempting login for:", emailVal);
             const { data, error } = await supabaseClient.auth.signInWithPassword({
                 email: emailVal,
                 password: passVal,
             });
 
             if (error) {
-                alert('خطأ في الدخول: ' + error.message);
-                submitBtn.innerText = originalText;
-                submitBtn.disabled = false;
+                showToast("خطأ في الدخول: " + error.message, "error");
+                btn.disabled = false;
+                btn.innerHTML = '<span>دخول النظام</span> <span class="material-icons text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>';
             } else {
                 showDashboard();
             }
@@ -93,88 +280,147 @@
             loginContainer.classList.add('hidden');
             dashboardContainer.classList.remove('hidden');
             loadBookings();
+            setupRealtime();
         }
 
         async function loadBookings() {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('bookings')
-                    .select('*')
-                    .order('created_at', { ascending: false });
+            const { data, error } = await supabaseClient
+                .from('bookings')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .limit(50);
 
-                if (error) throw error;
-
-                const list = document.getElementById('bookings-list');
-                list.innerHTML = '';
-
-                if (!data || data.length === 0) {
-                    list.innerHTML = '<tr><td colspan="5" class="p-10 text-center text-gray-400 font-bold">لا يوجد حجوزات حالياً</td></tr>';
-                    return;
-                }
-
-                data.forEach(booking => {
-                    list.innerHTML += `
-                        <tr class="border-b hover:bg-gray-50/50 transition-colors">
-                            <td class="p-6 font-bold text-indigo-900">${booking.customer_name}<br><span class="text-xs text-gray-400 font-normal">${booking.customer_phone}</span></td>
-                            <td class="p-6 text-sm">${booking.booking_date} | ${booking.booking_time}</td>
-                            <td class="p-6"><span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold">${booking.package}</span></td>
-                            <td class="p-6"><span class="status-badge ${booking.status}">${booking.status === 'paid' ? 'تم الدفع' : (booking.status === 'completed' ? 'تم التنفيذ' : 'قيد الانتظار')}</span></td>
-                            <td class="p-6">
-                                <button onclick="copyMsg('${booking.customer_name}', '${booking.booking_date}', '${booking.booking_time}', '${booking.qr_code_id}')" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-indigo-700 transition-all shadow-md active:scale-95">نسخ رسالة QR</button>
-                            </td>
-                        </tr>
-                    `;
-                });
-            } catch (err) {
-                console.error("Load bookings error:", err);
-                document.getElementById('bookings-list').innerHTML = '<tr><td colspan="5" class="p-10 text-center text-red-500 font-bold">حدث خطأ أثناء تحميل البيانات</td></tr>';
+            if (data) {
+                renderList(data);
+                updateStats(data);
             }
+        }
+
+        function renderList(bookings) {
+            listContainer.innerHTML = '';
+            if (bookings.length === 0) {
+                listContainer.innerHTML = '<tr><td colspan="5" class="p-20 text-center text-slate-500 font-bold italic">لا يوجد بيانات لعرضها</td></tr>';
+                return;
+            }
+
+            bookings.forEach(booking => {
+                const currentDir = window.location.href.substring(0, window.location.href.lastIndexOf("/"));
+                const verifyLink = `${currentDir}/verify.html?qr=${booking.qr_code_id}`;
+                const qrImage = `https://quickchart.io/qr?text=${encodeURIComponent(verifyLink)}&size=150`;
+                const cleanTime = booking.booking_time.substring(0, 5);
+
+                listContainer.innerHTML += `
+                    <tr class="group hover:bg-white/[0.02] transition-colors border-b border-white/[0.02]">
+                        <td class="p-6">
+                            <div class="font-bold text-white">${booking.customer_name}</div>
+                            <a href="https://wa.me/${booking.customer_phone.replace(/\+/g, '')}" target="_blank" 
+                                class="text-[10px] text-green-500 hover:text-green-400 font-bold flex items-center gap-1 mt-1 transition-colors">
+                                <span class="material-icons text-[10px]">chat</span>
+                                ${booking.customer_phone}
+                            </a>
+                        </td>
+                        <td class="p-6">
+                            <div class="text-xs font-bold text-slate-300">${booking.booking_date}</div>
+                            <div class="text-[10px] text-slate-500 mt-1">${cleanTime}</div>
+                        </td>
+                        <td class="p-6">
+                            <span class="px-3 py-1 bg-white/5 rounded-full text-[9px] font-black text-slate-400 group-hover:bg-primary/20 group-hover:text-primary transition-all">
+                                ${booking.package}
+                            </span>
+                        </td>
+                        <td class="p-6">
+                            <div class="flex flex-col items-center gap-2">
+                                <div class="relative group/qr shadow-lg hover:shadow-primary/20 p-1 bg-white/5 rounded-xl transition-all">
+                                    <img src="${qrImage}" class="w-12 h-12 rounded-lg opacity-80 group-hover/qr:opacity-100 transition-opacity">
+                                </div>
+                                <span class="status-badge ${booking.status}">${booking.status === 'paid' ? 'تم الدفع ✅' : (booking.status === 'completed' ? 'تم التنفيذ ✈️' : 'قيد الانتظار ⏳')}</span>
+                            </div>
+                        </td>
+                        <td class="p-6">
+                            <button onclick="copyMsg('${booking.customer_name}', '${booking.booking_date}', '${cleanTime}', '${booking.qr_code_id}')" 
+                                class="glass px-4 py-2 rounded-xl text-[10px] font-black hover:bg-primary transition-all">
+                                نسخ الرسالة
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function updateStats(bookings) {
+            document.getElementById('stat-total').innerText = bookings.length;
+            document.getElementById('stat-paid').innerText = bookings.filter(b => b.status === 'paid' || b.status === 'completed').length;
+            document.getElementById('stat-pending').innerText = bookings.filter(b => b.status === 'pending').length;
+
+            let revenue = bookings.reduce((acc, b) => {
+                if (b.status === 'paid' || b.status === 'completed') {
+                    return acc + (b.package.includes('جايرو') ? 300 : 200);
+                }
+                return acc;
+            }, 0);
+            document.getElementById('stat-revenue').innerText = revenue;
+        }
+
+        function setupRealtime() {
+            supabaseClient
+                .channel('schema-db-changes')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, (payload) => {
+                    console.log('Realtime change:', payload);
+                    loadBookings();
+
+                    if (payload.eventType === 'INSERT') {
+                        showToast(`حجز جديد من ${payload.new.customer_name}`, "success");
+                        playNotify();
+                    } else if (payload.eventType === 'UPDATE' && payload.new.status === 'paid') {
+                        showToast(`تم دفع حجز ${payload.new.customer_name}`, "success");
+                        playNotify();
+                    }
+                })
+                .subscribe();
+        }
+
+        function playNotify() {
+            audio.play().catch(e => console.log("Sound error:", e));
+        }
+
+        function showToast(message, type = "success") {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `glass-dark px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 transition-all duration-500 toast-enter`;
+
+            const icon = type === 'success' ? 'check_circle' : 'error';
+            const color = type === 'success' ? 'text-green-500' : 'text-red-500';
+
+            toast.innerHTML = `
+                <span class="material-icons ${color}">${icon}</span>
+                <span class="text-xs font-bold">${message}</span>
+            `;
+
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('toast-visible'), 10);
+            setTimeout(() => {
+                toast.classList.remove('toast-visible');
+                setTimeout(() => toast.remove(), 500);
+            }, 5000);
         }
 
         function copyMsg(name, date, time, qr) {
             const currentDir = window.location.href.substring(0, window.location.href.lastIndexOf("/"));
-            const verifyLink = `${currentDir}/verify.html?id=${qr}`;
-            // Use QuickCharts for a real QR code image
+            const verifyLink = `${currentDir}/verify.html?qr=${qr}`;
             const qrImageUrl = `https://quickchart.io/qr?text=${encodeURIComponent(verifyLink)}&size=300`;
 
             const msg = `مرحباً ${name}!\nشكراً لحجزك في نادي الحريضة للطيران.\nموعدك هو يوم ${date} الساعة ${time}.\n\nيرجى إبراز هذا الرمز عند الوصول:\n${verifyLink}\n\nصورة الرمز (QR):\n${qrImageUrl}`;
 
-            navigator.clipboard.writeText(msg);
-            alert('تم نسخ الرسالة! تشمل الآن رابط التحقق وصورة الرمز.\nأرسلها للعميل في واتساب.');
+            navigator.clipboard.writeText(msg).then(() => {
+                showToast("تم نسخ الرسالة بنجاح!");
+            });
         }
 
         async function logout() {
             await supabaseClient.auth.signOut();
             window.location.reload();
         }
-
-        async function resetPassword() {
-            const emailAddr = prompt('أدخل بريدك الإلكتروني لإعادة تعيين كلمة المرور:');
-            if (emailAddr) {
-                const { error } = await supabaseClient.auth.resetPasswordForEmail(emailAddr);
-                if (error) alert(error.message);
-                else alert('تم إرسال رابط إعادة التعيين لبريدك.');
-            }
-        }
     </script>
-    <style>
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 99px;
-            font-weight: bold;
-            font-size: 10px;
-        }
-
-        .paid {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .pending {
-            background: #fef9c3;
-            color: #854d0e;
-        }
-    </style>
 </body>
 
 </html>
