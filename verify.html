@@ -143,10 +143,10 @@
                 .single();
 
             if (data) {
-                document.getElementById('res-name').innerText = data.customer_name;
-                document.getElementById('res-date').innerText = data.booking_date;
-                document.getElementById('res-time').innerText = format12h(data.booking_time.substring(0, 5));
-                document.getElementById('res-package').innerText = data.package;
+                document.getElementById('res-name').innerText = data.customer_name || 'غير محدد';
+                document.getElementById('res-date').innerText = data.booking_date || 'غير محدد';
+                document.getElementById('res-time').innerText = data.booking_time ? format12h(data.booking_time.substring(0, 5)) : 'غير محدد';
+                document.getElementById('res-package').innerText = data.package || 'غير محدد';
 
                 if (data.status === 'completed') {
                     renderState('تم الاستخدام', 'MISSION_ALREADY_LOGGED', 'warning');
