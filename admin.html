@@ -339,6 +339,17 @@
             }
         }
 
+        function format12h(time24) {
+            if (!time24) return "";
+            const [hours, minutes] = time24.split(':');
+            let h = parseInt(hours);
+            const m = minutes;
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12;
+            h = h ? h : 12;
+            return `${h}:${m} ${ampm}`;
+        }
+
         function renderList(bookings) {
             listContainer.innerHTML = '';
             bookings.forEach(booking => {
@@ -346,6 +357,7 @@
                 const verifyLink = `${currentDir}/verify.html?qr=${booking.qr_code_id}`;
                 const qrImg = `https://quickchart.io/qr?text=${encodeURIComponent(verifyLink)}&size=300`;
                 const cleanTime = booking.booking_time.substring(0, 5);
+                const time12h = format12h(cleanTime);
 
                 const tr = document.createElement('tr');
                 tr.className = "group hover:bg-slate-50/80 transition-all duration-300";
@@ -361,7 +373,7 @@
                     </td>
                     <td data-label="الموعد" class="text-center">
                         <div class="text-sm font-black text-slate-600">${booking.booking_date}</div>
-                        <div class="text-[9px] font-black text-slate-300 mt-1 uppercase tracking-widest underline decoration-indigo-200">${cleanTime} HRS SLOW</div>
+                        <div class="text-[9px] font-black text-slate-300 mt-1 uppercase tracking-widest underline decoration-indigo-200">${time12h} SLOW</div>
                     </td>
                     <td data-label="الحالة" class="text-center">
                         <div class="flex items-center justify-center gap-8">
@@ -378,7 +390,7 @@
                             ${booking.status === 'pending' ? `
                             <button onclick="manualConfirm('${booking.qr_code_id}')" class="bg-emerald-500 text-white px-4 py-2 rounded-xl text-[9px] font-black hover:bg-emerald-600 transition-all">تحويل لمدفوع</button>
                             ` : ''}
-                            <button onclick="copyMsg('${booking.customer_name}', '${booking.booking_date}', '${cleanTime}', '${booking.qr_code_id}')" 
+                            <button onclick="copyMsg('${booking.customer_name}', '${booking.booking_date}', '${time12h}', '${booking.qr_code_id}')" 
                                 class="bg-indigo-600 text-white px-8 py-3.5 rounded-2xl text-[10px] font-black shadow-lg shadow-indigo-100 hover:bg-black transition-all btn-action uppercase tracking-widest">
                                 إرسال الرمز
                             </button>

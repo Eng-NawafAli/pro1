@@ -11,6 +11,10 @@
         href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Noto+Sans+Arabic:wght@400;500;600;700;800&amp;display=swap"
         rel="stylesheet" />
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Moyasar Payment SDK -->
+    <link rel="stylesheet" href="https://cdn.moyasar.com/mpf/1.14.0/moyasar.css" />
+    <script src="https://cdn.moyasar.com/mpf/1.14.0/moyasar.js"></script>
     <style>
         :root {
             --primary: #6366f1;
@@ -51,13 +55,25 @@
             }
 
             .section-py {
-                padding-top: 4rem !important;
-                padding-bottom: 4rem !important;
+                padding-top: 3rem !important;
+                padding-bottom: 3rem !important;
             }
 
             .mobile-label-center {
                 text-align: center !important;
                 width: 100%;
+                display: block;
+            }
+
+            .glass {
+                padding: 1.5rem !important;
+                border-radius: 2rem !important;
+            }
+
+            input,
+            select,
+            button {
+                border-radius: 1.25rem !important;
             }
         }
     </style>
@@ -473,17 +489,17 @@
 
                             <div class="grid md:grid-cols-2 gap-6">
                                 <input required name="الاسم" type="text" placeholder="الاسم الكامل"
-                                    class="w-full bg-slate-100 dark:bg-white/10 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-primary font-bold text-sm" />
+                                    class="w-full bg-slate-100 dark:bg-white/10 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-primary font-bold text-sm text-center md:text-right" />
                                 <input required name="الجوال" type="tel" placeholder="رقم الجوال (05xxxxxxxx)"
                                     pattern="^05[0-9]{8}$" maxlength="10"
-                                    class="w-full bg-white/50 border-white/20 rounded-2xl p-4 focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-slate-400">
+                                    class="w-full bg-slate-100 dark:bg-white/10 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-primary font-bold text-sm text-center md:text-right placeholder:text-slate-400">
                             </div>
                             <div class="space-y-4">
                                 <label
                                     class="text-sm font-bold text-slate-800 dark:text-white block px-2 tracking-tight">التاريخ</label>
                                 <div class="space-y-3">
                                     <input required name="التاريخ" type="date" id="date_input"
-                                        class="w-full bg-slate-100 dark:bg-white/10 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-primary font-bold text-sm" />
+                                        class="w-full bg-slate-100 dark:bg-white/10 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-primary font-bold text-sm text-center md:text-right" />
                                     <div class="flex gap-2">
                                         <button type="button" onclick="setDateQuickly(0)"
                                             class="flex-1 py-2 rounded-xl bg-primary/5 border border-primary/20 text-primary font-bold text-[10px] hover:bg-primary hover:text-white transition-all">اليوم</button>
@@ -497,7 +513,7 @@
                                 <label
                                     class="text-sm font-bold text-slate-800 dark:text-white block px-2 tracking-tight">الباقة</label>
                                 <select required name="الباقة_المختارة" id="flight_type_select"
-                                    class="w-full bg-slate-100 dark:bg-white/10 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-primary font-bold text-sm">
+                                    class="w-full bg-slate-100 dark:bg-white/10 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-primary font-bold text-sm text-center md:text-right">
                                     <option value="جايروكوبتر">جايروكوبتر (300 ريال)</option>
                                     <option value="ترايك">ترايك (200 ريال)</option>
                                 </select>
@@ -567,7 +583,7 @@
                                 <h3 class="text-xl font-bold text-primary mb-2">إتمام عملية الدفع</h3>
                                 <p class="text-xs text-slate-500">يرجى اختيار طريقة الدفع المناسبة لك</p>
                             </div>
-                            <div class="mysr-form"></div>
+                            <div class="mys-payment-form"></div>
                             <button onclick="cancelPayment()"
                                 class="w-full mt-4 text-slate-400 text-xs font-bold hover:text-red-500 transition-colors">إلغاء
                                 العملية والعودة</button>

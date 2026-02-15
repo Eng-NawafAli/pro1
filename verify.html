@@ -117,6 +117,17 @@
         const urlParams = new URLSearchParams(window.location.search);
         const bookingId = urlParams.get('qr');
 
+        function format12h(time24) {
+            if (!time24) return "";
+            const [hours, minutes] = time24.split(':');
+            let h = parseInt(hours);
+            const m = minutes;
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12;
+            h = h ? h : 12;
+            return `${h}:${m} ${ampm}`;
+        }
+
         async function verify() {
             if (!bookingId) {
                 renderState('كود غير صالح', 'ERROR_MANIFEST_VOID', 'error');
@@ -134,7 +145,7 @@
             if (data) {
                 document.getElementById('res-name').innerText = data.customer_name;
                 document.getElementById('res-date').innerText = data.booking_date;
-                document.getElementById('res-time').innerText = data.booking_time.substring(0, 5) + " HRS";
+                document.getElementById('res-time').innerText = format12h(data.booking_time.substring(0, 5));
                 document.getElementById('res-package').innerText = data.package;
 
                 if (data.status === 'completed') {
