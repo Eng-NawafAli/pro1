@@ -4,37 +4,138 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>التحقق من الحجز | نادي الحريضة</title>
+    <title>التحقق من التصريح | نادي الحريضة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Noto+Sans+Arabic:wght@400;700;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
+        :root {
+            --primary: #6366f1;
+            --bg-dark: #020617;
+        }
+
         body {
-            font-family: 'Noto Sans Arabic', sans-serif;
+            font-family: 'Noto Sans Arabic', 'Outfit', sans-serif;
+            background-color: var(--bg-dark);
+            color: #f8fafc;
+            overflow: hidden;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .animate-gradient {
+            background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #020617 100%);
+        }
+
+        .status-card {
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .status-glow-green {
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.2);
+        }
+
+        .status-glow-red {
+            box-shadow: 0 0 30px rgba(244, 63, 94, 0.2);
+        }
+
+        .status-glow-amber {
+            box-shadow: 0 0 30px rgba(245, 158, 11, 0.2);
+        }
+
+        .pulse-icon {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
     </style>
 </head>
 
-<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-6">
-    <div id="checker-card" class="bg-white p-8 rounded-[2.5rem] shadow-2xl w-full max-w-sm text-center">
-        <div id="loading" class="animate-pulse space-y-4">
-            <div class="h-20 w-20 bg-gray-200 rounded-full mx-auto"></div>
-            <div class="h-4 bg-gray-200 rounded w-3/4 mx-auto"></div>
-            <p>جاري التحقق من الحجز...</p>
+<body class="animate-gradient flex items-center justify-center min-h-screen p-6">
+    <div id="main-card"
+        class="glass p-10 rounded-[3rem] w-full max-w-sm status-card animate-in fade-in slide-in-from-bottom-8 duration-700 relative overflow-hidden">
+        <div class="absolute -top-12 -left-12 w-48 h-48 bg-primary/5 rounded-full blur-3xl"></div>
+
+        <!-- Loading State -->
+        <div id="loader" class="text-center space-y-8 py-10">
+            <div class="w-20 h-20 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto"></div>
+            <div class="space-y-2">
+                <h2 class="text-xl font-black uppercase italic tracking-tighter">AUTHENTICATING</h2>
+                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Verifying flight authorization
+                    token...</p>
+            </div>
         </div>
 
-        <div id="result" class="hidden space-y-6">
-            <div id="status-icon" class="text-6xl mb-4"></div>
-            <h2 id="status-text" class="text-2xl font-black"></h2>
-            <div id="booking-details" class="bg-gray-50 p-6 rounded-2xl text-right space-y-2">
-                <p><span class="text-gray-400">العميل:</span> <span id="res-name" class="font-bold"></span></p>
-                <p><span class="text-gray-400">التاريخ:</span> <span id="res-date" class="font-bold"></span></p>
-                <p><span class="text-gray-400">الوقت:</span> <span id="res-time" class="font-bold"></span></p>
-                <p><span class="text-gray-400">الباقة:</span> <span id="res-package" class="font-bold"></span></p>
+        <!-- Result Content -->
+        <div id="content" class="hidden space-y-10">
+            <!-- Icon Result -->
+            <div id="icon-container"
+                class="w-32 h-32 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-2xl relative">
+                <span id="status-icon" class="material-icons text-6xl text-white"></span>
+                <div id="icon-pulse" class="absolute inset-0 rounded-[2.5rem] bg-current opacity-20 pulse-icon"></div>
             </div>
-            <button id="complete-btn" onclick="completeBooking()"
-                class="hidden w-full bg-green-500 text-white py-4 rounded-xl font-bold shadow-lg shadow-green-200">تبديل
-                الحالة إلى "تم الحضور"</button>
+
+            <div class="text-center space-y-2">
+                <h2 id="status-title" class="text-3xl font-black tracking-tight leading-none uppercase italic"></h2>
+                <p id="status-subtitle" class="text-[10px] font-black uppercase tracking-[0.2em] opacity-50"></p>
+            </div>
+
+            <!-- Booking Details -->
+            <div class="bg-white/5 rounded-[2rem] p-8 space-y-6 border border-white/5">
+                <div class="flex justify-between items-center border-b border-white/5 pb-4">
+                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">PILOT NAME</span>
+                    <span id="res-name" class="text-sm font-black text-white"></span>
+                </div>
+                <div class="flex justify-between items-center border-b border-white/5 pb-4">
+                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">FLIGHT WINDOW</span>
+                    <div class="text-left">
+                        <div id="res-date" class="text-xs font-black text-white"></div>
+                        <div id="res-time" class="text-[9px] font-bold text-slate-500 text-right uppercase"></div>
+                    </div>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">SERVICE UNIT</span>
+                    <span id="res-package"
+                        class="px-3 py-1 bg-primary/10 rounded-lg text-[10px] font-black text-primary"></span>
+                </div>
+            </div>
+
+            <!-- Verification Action -->
+            <div id="action-zone" class="hidden pt-4">
+                <button onclick="approveBooking()" id="approve-btn"
+                    class="w-full bg-green-500 hover:bg-green-400 text-white py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3">
+                    <span>ثبات الصعود والتحرك</span>
+                    <span class="material-icons text-sm">flight_takeoff</span>
+                </button>
+            </div>
+
+            <!-- Close Action -->
+            <button onclick="window.close()"
+                class="w-full text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] hover:text-slate-400 transition-colors pt-4">DISMISS
+                PORTAL</button>
         </div>
     </div>
 
@@ -48,7 +149,7 @@
 
         async function verify() {
             if (!bookingId) {
-                showError('كود غير صالح');
+                renderState('ERROR', 'INVALID_TOKEN', 'error');
                 return;
             }
 
@@ -58,49 +159,72 @@
                 .eq('qr_code_id', bookingId)
                 .single();
 
-            document.getElementById('loading').classList.add('hidden');
-            document.getElementById('result').classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+                document.getElementById('content').classList.remove('hidden');
 
-            if (data) {
-                document.getElementById('res-name').innerText = data.customer_name;
-                document.getElementById('res-date').innerText = data.booking_date;
-                document.getElementById('res-time').innerText = data.booking_time;
-                document.getElementById('res-package').innerText = data.package;
+                if (data) {
+                    document.getElementById('res-name').innerText = data.customer_name;
+                    document.getElementById('res-date').innerText = data.booking_date;
+                    document.getElementById('res-time').innerText = data.booking_time.substring(0, 5) + " HRS";
+                    document.getElementById('res-package').innerText = data.package;
 
-                if (data.status === 'completed') {
-                    showError('هذا الكود مستخدم مسبقاً!', 'warning');
-                } else if (data.status === 'paid') {
-                    showSuccess('حجز صالح ومدفوع');
-                    document.getElementById('complete-btn').classList.remove('hidden');
+                    if (data.status === 'completed') {
+                        renderState('ALREADY USED', 'PREVIOUSLY SCANNED', 'warning');
+                    } else if (data.status === 'paid') {
+                        renderState('AUTHORIZED', 'PAYMENT CONFIRMED', 'success');
+                        document.getElementById('action-zone').classList.remove('hidden');
+                    } else {
+                        renderState('NOT PAID', 'AWAITING PAYMENT', 'error');
+                    }
                 } else {
-                    showError('الحجز لم يتم دفعه بعد', 'error');
+                    renderState('NOT FOUND', 'INVALID FRAGMENT', 'error');
                 }
+            }, 800);
+        }
+
+        function renderState(title, subtitle, state) {
+            const card = document.getElementById('main-card');
+            const iconCont = document.getElementById('icon-container');
+            const icon = document.getElementById('status-icon');
+            const titleEl = document.getElementById('status-title');
+            const subTitleEl = document.getElementById('status-subtitle');
+
+            titleEl.innerText = title;
+            subTitleEl.innerText = subtitle;
+
+            if (state === 'success') {
+                card.classList.add('status-glow-green');
+                iconCont.className = "w-32 h-32 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-2xl relative bg-green-500";
+                icon.innerText = "verified_user";
+                titleEl.classList.add('text-green-500');
+            } else if (state === 'warning') {
+                card.classList.add('status-glow-amber');
+                iconCont.className = "w-32 h-32 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-2xl relative bg-amber-500";
+                icon.innerText = "history";
+                titleEl.classList.add('text-amber-500');
             } else {
-                showError('لم يتم العثور على الحجز');
+                card.classList.add('status-glow-red');
+                iconCont.className = "w-32 h-32 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-2xl relative bg-red-500";
+                icon.innerText = "report";
+                titleEl.classList.add('text-red-500');
             }
         }
 
-        function showSuccess(msg) {
-            document.getElementById('status-icon').innerText = '✅';
-            document.getElementById('status-text').innerText = msg;
-            document.getElementById('status-text').className = 'text-2xl font-black text-green-500';
-        }
+        async function approveBooking() {
+            const btn = document.getElementById('approve-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-icons animate-spin">sync</span>';
 
-        function showError(msg, type = 'error') {
-            document.getElementById('status-icon').innerText = type === 'warning' ? '⚠️' : '❌';
-            document.getElementById('status-text').innerText = msg;
-            document.getElementById('status-text').className = `text-2xl font-black ${type === 'warning' ? 'text-amber-500' : 'text-red-500'}`;
-        }
-
-        async function completeBooking() {
             const { error } = await supabaseClient
                 .from('bookings')
                 .update({ status: 'completed' })
                 .eq('qr_code_id', bookingId);
 
             if (!error) {
-                alert('تم تسجيل الدخول بنجاح!');
-                window.location.reload();
+                renderState('COMPLETED', 'LOGGED SUCCESSFULLY', 'success');
+                btn.parentElement.classList.add('hidden');
+                setTimeout(() => window.location.reload(), 2000);
             }
         }
 

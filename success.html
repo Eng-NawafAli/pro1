@@ -7,32 +7,87 @@
     <title>تم النجاح | نادي الحريضة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Noto+Sans+Arabic:wght@400;700;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
+        :root {
+            --primary: #6366f1;
+            --bg-dark: #020617;
+        }
+
         body {
-            font-family: 'Noto Sans Arabic', sans-serif;
+            font-family: 'Noto Sans Arabic', 'Outfit', sans-serif;
+            background-color: var(--bg-dark);
+            color: #f8fafc;
+            overflow: hidden;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .animate-gradient {
+            background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #020617 100%);
+        }
+
+        .success-card {
+            box-shadow: 0 0 60px rgba(99, 102, 241, 0.1);
+        }
+
+        .animate-check {
+            animation: check-bounce 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes check-bounce {
+            0% {
+                transform: scale(0) rotate(-45deg);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1) rotate(0);
+                opacity: 1;
+            }
         }
     </style>
 </head>
 
-<body class="bg-gray-50 flex items-center justify-center min-h-screen p-6">
-    <div class="bg-white p-10 rounded-[3rem] shadow-2xl max-w-md w-full text-center space-y-8">
-        <div class="text-6xl">🎉</div>
-        <h1 class="text-3xl font-black text-indigo-900">شكراً لك!</h1>
-        <p class="text-gray-600 leading-relaxed">تمت عملية الدفع بنجاح. سنقوم بمراجعة حجزك الآن وإرسال رمز الـ QR الخاص
-            بك عبر الواتساب قريباً.</p>
+<body class="animate-gradient flex items-center justify-center min-h-screen p-6">
+    <div
+        class="glass p-12 rounded-[3.5rem] w-full max-w-sm text-center space-y-10 success-card animate-in fade-in zoom-in duration-1000">
+        <!-- Success Icon -->
+        <div
+            class="w-24 h-24 bg-green-500 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-[0_0_30px_rgba(34,197,94,0.3)] animate-check">
+            <span class="material-icons text-white text-5xl">verified</span>
+        </div>
 
-        <div class="p-6 bg-indigo-50 rounded-2xl border border-indigo-100 italic text-sm text-indigo-700">
-            "نراك قريباً في سماء الحريضة!"
+        <div class="space-y-4">
+            <h1 class="text-4xl font-black text-white italic tracking-tight uppercase">MISSION SUCCESS</h1>
+            <p class="text-slate-400 text-sm font-bold leading-relaxed">
+                تمت عملية الدفع بنجاح. سنقوم بمراجعة حجزك الآن وإرسال رمز الـ QR الخاص بك عبر الواتساب قريباً.
+            </p>
+        </div>
+
+        <div class="p-6 bg-white/[0.02] rounded-3xl border border-white/5 space-y-1">
+            <p class="text-[9px] font-black text-slate-600 uppercase tracking-[0.3em]">FLIGHT MANIFEST STATUS</p>
+            <p class="text-green-500 text-xs font-black uppercase tracking-widest">Awaiting Staff Clearance</p>
         </div>
 
         <a href="flywebsite.html"
-            class="block w-full bg-indigo-600 text-white py-4 rounded-xl font-bold shadow-lg shadow-indigo-200">العودة
-            للرئيسية</a>
+            class="group block w-full bg-primary hover:bg-primary-light text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2">
+            <span>RETURN TO HQ</span>
+            <span class="material-icons text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+        </a>
+
+        <p class="text-[9px] font-black text-slate-700 uppercase tracking-widest italic">"See you in the skies of
+            Al-Haridha"</p>
     </div>
 
     <script>
-        // Automatic status update if the redirect includes success info
         const SUPABASE_URL = 'https://ycknumkbdltbdkhmeyqp.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlja251bWtiZGx0YmRraG1leXFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExMTk3MTAsImV4cCI6MjA4NjY5NTcxMH0.BNCTfaqsul1LkDbG0PyOd63rYZCThUjGxAhgNMnda6w';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
