@@ -820,6 +820,8 @@
 
             } catch (error) {
                 console.error("Submission Error:", error);
+                // Show the specific error to the user for debugging
+                alert("Submission Error: " + (error.message || JSON.stringify(error)));
                 errorMsg.innerText = "عذراً، حدث خطأ أثناء معالجة الطلب. يرجى المحاولة لاحقاً.";
                 errorMsg.classList.remove('hidden');
                 submitBtn.disabled = false;
