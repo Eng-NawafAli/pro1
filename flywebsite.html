@@ -943,6 +943,15 @@
 
                 if (dbError) throw dbError;
 
+                console.log("=== BOOKING CREATED ===");
+                console.log("Booking data:", booking);
+                console.log("QR Code ID:", booking?.qr_code_id);
+
+                // Validate that we got a QR code
+                if (!booking || !booking.qr_code_id) {
+                    throw new Error("فشل في إنشاء رمز الحجز. يرجى المحاولة مرة أخرى.");
+                }
+
                 // 2. Hide Form and Show payment form
                 document.getElementById('bookingForm').classList.add('hidden');
                 document.getElementById('paymentContainer').classList.remove('hidden');
@@ -968,9 +977,13 @@
                     },
                     // Handle successful payment
                     on_completed: function (payment) {
-                        console.log("Payment completed:", payment);
+                        console.log("=== PAYMENT COMPLETED ===");
+                        console.log("Payment:", payment);
+                        console.log("Building success URL with QR:", booking.qr_code_id);
+
                         // Redirect to success page with proper parameters
                         const successUrl = `${baseUrl}success.html?qr=${booking.qr_code_id}&status=${payment.status}&id=${payment.id}`;
+                        console.log("Redirecting to:", successUrl);
                         window.location.href = successUrl;
                     },
                     // Handle failed payment
