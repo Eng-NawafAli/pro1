@@ -44,6 +44,39 @@
             box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
         }
 
+        /* Premium Input System — works on ALL screen sizes */
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 1.2rem;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .premium-input {
+            font-size: 16px !important;
+            /* Prevents iOS zoom */
+            height: 3.5rem;
+            border-radius: 1.25rem !important;
+            padding-right: 3rem !important;
+            padding-left: 1rem !important;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: right;
+        }
+
+        .premium-input:focus {
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
+            border-color: var(--primary) !important;
+        }
+
         @media (max-width: 640px) {
             .form-card {
                 padding: 1.5rem !important;
@@ -55,51 +88,32 @@
             }
 
             .section-py {
-                padding-top: 3rem !important;
-                padding-bottom: 3rem !important;
-            }
-
-            .mobile-label-center {
-                text-align: center !important;
-                width: 100%;
-                display: block;
+                padding-top: 2.5rem !important;
+                padding-bottom: 2.5rem !important;
             }
 
             .glass {
-                padding: 1.5rem !important;
-                border-radius: 2rem !important;
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+                padding: 1.25rem !important;
+                border-radius: 1.75rem !important;
+                margin-left: 0.5rem;
+                margin-right: 0.5rem;
+            }
+
+            .booking-heading {
+                font-size: 2rem !important;
+            }
+
+            .booking-info-card {
+                display: none !important;
             }
 
             .premium-input {
-                font-size: 16px !important;
-                /* Prevents iOS zoom */
-                height: 3.5rem !important;
-                border-radius: 1rem !important;
-                background: rgba(255, 255, 255, 0.05) !important;
-                border: 1px solid rgba(255, 255, 255, 0.1) !important;
-                padding-right: 3rem !important;
-                transition: all 0.3s ease !important;
+                height: 3.25rem;
+                font-size: 15px !important;
             }
 
-            .premium-input:focus {
-                background: rgba(255, 255, 255, 0.1) !important;
-                border-color: var(--primary) !important;
-                box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1) !important;
-            }
-
-            .input-wrapper {
-                position: relative;
-            }
-
-            .input-icon {
-                position: absolute;
-                top: 50%;
-                right: 1.25rem;
-                transform: translateY(-50%);
-                color: var(--primary);
-                font-size: 1.25rem;
-                pointer-events: none;
+            .grid.md\\:grid-cols-2 {
+                grid-template-columns: 1fr !important;
             }
         }
     </style>
@@ -488,16 +502,18 @@
 
         <!-- Booking Section (FormSubmit AJAX Form) -->
         <section id="booking" class="section-py bg-white dark:bg-background-dark">
-            <div class="max-w-6xl mx-auto px-6">
-                <div class="grid lg:grid-cols-2 gap-12 lg:gap-20">
+            <div class="max-w-6xl mx-auto px-4 md:px-6">
+                <div class="grid lg:grid-cols-2 gap-8 lg:gap-20">
                     <div class="space-y-6 lg:space-y-10">
-                        <div class="space-y-4 text-right">
-                            <h2 class="text-4xl md:text-6xl font-black text-primary tracking-tight">باشر حجزك</h2>
-                            <p class="text-lg text-slate-500 font-light leading-relaxed">املأ بياناتك أدناه وسيتواصل معك
+                        <div class="space-y-3 text-right">
+                            <h2 class="booking-heading text-4xl md:text-6xl font-black text-primary tracking-tight">باشر
+                                حجزك</h2>
+                            <p class="text-base md:text-lg text-slate-500 font-light leading-relaxed">املأ بياناتك أدناه
+                                وسيتواصل معك
                                 فريق الحجوزات لتأكيد الموعد النهائي.</p>
                         </div>
                         <div
-                            class="flex gap-4 p-6 rounded-3xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10">
+                            class="booking-info-card flex gap-4 p-6 rounded-3xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10">
                             <div
                                 class="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
                                 <span class="material-icons text-3xl">add_task</span>
@@ -509,49 +525,50 @@
                         </div>
                     </div>
 
-                    <div
-                        class="glass p-6 md:p-10 rounded-[2.5rem] md:rounded-[3rem] shadow-xl border border-primary/10">
-                        <form id="bookingForm" class="space-y-6">
+                    <div class="glass p-5 md:p-10 rounded-[2rem] md:rounded-[3rem] shadow-xl border border-primary/10">
+                        <form id="bookingForm" class="space-y-5">
 
-                            <div class="grid md:grid-cols-2 gap-5">
+                            <!-- Name & Phone -->
+                            <div class="space-y-4">
                                 <div class="input-wrapper">
                                     <span class="material-icons input-icon">person</span>
                                     <input required name="الاسم" type="text" placeholder="الاسم الكامل"
-                                        class="premium-input w-full px-6 focus:ring-2 focus:ring-primary font-bold text-sm bg-slate-100 dark:bg-white/10 border-none rounded-2xl" />
+                                        class="premium-input bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 rounded-2xl py-3 px-6 font-bold text-sm" />
                                 </div>
                                 <div class="input-wrapper">
                                     <span class="material-icons input-icon">phone_iphone</span>
-                                    <input required name="الجوال" type="tel" placeholder="رقم الجوال (05xxxxxxxx)"
-                                        pattern="^05[0-9]{8}$" maxlength="10"
-                                        class="premium-input w-full px-6 focus:ring-2 focus:ring-primary font-bold text-sm bg-slate-100 dark:bg-white/10 border-none rounded-2xl text-ltr" />
+                                    <input required name="الجوال" type="tel" placeholder="05xxxxxxxx"
+                                        pattern="^05[0-9]{8}$" maxlength="10" dir="ltr"
+                                        class="premium-input bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 rounded-2xl py-3 px-6 font-bold text-sm" />
                                 </div>
                             </div>
 
+                            <!-- Booking Details -->
                             <div class="space-y-3">
                                 <label
-                                    class="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest px-2 block">تفاصيل
+                                    class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] px-1 block">تفاصيل
                                     الحجز</label>
-                                <div class="grid md:grid-cols-2 gap-5">
-                                    <div class="input-wrapper">
-                                        <span class="material-icons input-icon">calendar_today</span>
-                                        <input required name="التاريخ" type="date" id="date_input"
-                                            class="premium-input w-full px-6 focus:ring-2 focus:ring-primary font-bold text-sm bg-slate-100 dark:bg-white/10 border-none rounded-2xl" />
-                                    </div>
-                                    <div class="input-wrapper">
-                                        <span class="material-icons input-icon">flight</span>
-                                        <select required name="الباقة_المختارة" id="flight_type_select"
-                                            class="premium-input w-full px-12 focus:ring-2 focus:ring-primary font-bold text-sm bg-slate-100 dark:bg-white/10 border-none rounded-2xl appearance-none">
-                                            <option value="جايروكوبتر">جايروكوبتر (300 ريال)</option>
-                                            <option value="ترايك">ترايك (200 ريال)</option>
-                                        </select>
-                                    </div>
+
+                                <div class="input-wrapper">
+                                    <span class="material-icons input-icon">calendar_today</span>
+                                    <input required name="التاريخ" type="date" id="date_input"
+                                        class="premium-input bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 rounded-2xl py-3 px-6 font-bold text-sm" />
+                                </div>
+
+                                <div class="input-wrapper">
+                                    <span class="material-icons input-icon">flight</span>
+                                    <select required name="الباقة_المختارة" id="flight_type_select"
+                                        class="premium-input bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 rounded-2xl py-3 px-12 font-bold text-sm appearance-none">
+                                        <option value="جايروكوبتر">جايروكوبتر (300 ريال)</option>
+                                        <option value="ترايك">ترايك (200 ريال)</option>
+                                    </select>
                                 </div>
                             </div>
 
                             <div class="input-wrapper">
                                 <span class="material-icons input-icon">schedule</span>
                                 <select required name="الوقت" id="time_select"
-                                    class="premium-input w-full px-12 focus:ring-2 focus:ring-primary font-bold text-sm bg-slate-100 dark:bg-white/10 border-none rounded-2xl appearance-none">
+                                    class="premium-input bg-slate-100 dark:bg-white/10 border border-slate-200 dark:border-white/10 rounded-2xl py-3 px-12 font-bold text-sm appearance-none">
                                     <option value="" disabled selected>اختر الوقت المفضل</option>
                                     <optgroup label="الفترة الصباحية">
                                         <option value="06:00">06:00 AM</option>
@@ -577,9 +594,9 @@
                                 </select>
                             </div>
 
-                            <!-- Success/Error Overlays -->
+                            <!-- Terms checkbox -->
                             <div id="formSuccess"
-                                class="hidden p-5 rounded-2xl bg-green-500/10 text-green-500 text-center font-bold text-xs ring-1 ring-green-500/20">
+                                class="hidden p-4 rounded-2xl bg-green-500/10 text-green-500 text-center font-bold text-xs ring-1 ring-green-500/20">
                                 <div class="flex items-center justify-center gap-2 mb-1">
                                     <span class="material-icons text-lg">check_circle</span>
                                     تم إرسال طلبك بنجاح!
@@ -588,21 +605,22 @@
                             </div>
 
                             <div id="formError"
-                                class="hidden p-5 rounded-2xl bg-red-500/10 text-red-500 text-center font-bold text-xs ring-1 ring-red-500/20">
+                                class="hidden p-4 rounded-2xl bg-red-500/10 text-red-500 text-center font-bold text-xs ring-1 ring-red-500/20">
                                 عذراً، حدث خطأ. يرجى المحاولة لاحقاً.
                             </div>
 
-                            <div class="grid md:grid-cols-2 gap-4">
+                            <!-- Buttons stacked on mobile -->
+                            <div class="space-y-3">
                                 <button type="submit" id="submitBtn"
-                                    class="w-full bg-primary text-white py-4 rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all text-sm flex items-center justify-center gap-3">
+                                    class="w-full bg-primary text-white py-4 rounded-2xl font-black shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all text-sm flex items-center justify-center gap-3">
                                     <span id="btnText">إرسال الطلب</span>
                                     <span id="btnIcon" class="material-icons text-xl">send</span>
                                 </button>
 
                                 <a href="https://wa.me/966550066463"
-                                    class="w-full bg-[#25D366] text-white py-4 rounded-2xl font-bold text-sm text-center flex items-center justify-center gap-3 hover:opacity-90 transition-all">
-                                    <span class="material-symbols-outlined">chat</span>
-                                    تواصل واتساب
+                                    class="w-full bg-[#25D366] text-white py-3.5 rounded-2xl font-bold text-xs text-center flex items-center justify-center gap-2 hover:opacity-90 transition-all">
+                                    <span class="material-icons text-base">chat</span>
+                                    تواصل مباشر واتساب
                                 </a>
                             </div>
                         </form>
