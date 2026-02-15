@@ -6,6 +6,7 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>نادي الحريضة للطيران الرياضي | لؤلؤة عسير</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans+Arabic:wght@300;400;500;600;700;800;900&display=swap"
         rel="stylesheet" />
@@ -459,6 +460,37 @@
                                 </select>
                             </div>
 
+                            <div class="space-y-4">
+                                <label
+                                    class="text-sm font-bold text-slate-800 dark:text-white block px-2 tracking-tight">الوقت
+                                    المفضل</label>
+                                <select required name="الوقت" id="time_select"
+                                    class="w-full bg-slate-100 dark:bg-white/10 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-primary font-bold text-sm">
+                                    <option value="" disabled selected>اختر الوقت</option>
+                                    <optgroup label="الفترة الصباحية">
+                                        <option value="06:00">06:00 AM</option>
+                                        <option value="06:30">06:30 AM</option>
+                                        <option value="07:00">07:00 AM</option>
+                                        <option value="07:30">07:30 AM</option>
+                                        <option value="08:00">08:00 AM</option>
+                                        <option value="08:30">08:30 AM</option>
+                                        <option value="09:00">09:00 AM</option>
+                                        <option value="09:30">09:30 AM</option>
+                                        <option value="10:00">10:00 AM</option>
+                                    </optgroup>
+                                    <optgroup label="الفترة المسائية">
+                                        <option value="15:30">03:30 PM</option>
+                                        <option value="16:00">04:00 PM</option>
+                                        <option value="16:30">04:30 PM</option>
+                                        <option value="17:00">05:00 PM</option>
+                                        <option value="17:30">05:30 PM</option>
+                                        <option value="18:00">06:00 PM</option>
+                                        <option value="18:30">06:30 PM</option>
+                                        <option value="19:00">07:00 PM</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+
                             <!-- Success Message Overlay -->
                             <div id="formSuccess"
                                 class="hidden p-4 rounded-xl bg-green-500/10 text-green-500 text-center font-bold text-[11px] leading-tight flex flex-col gap-1 items-center">
@@ -728,54 +760,68 @@
             setInterval(updateBusinessStatus, 60000); // Check every minute
         });
 
-        // Form Submission Logic using FormSubmit AJAX
+        // --- Supabase & Moyasar Integration ---
+        const SUPABASE_URL = 'https://ycknumkbdltbdkhmeyqp.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlja251bWtiZGx0YmRraG1leXFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExMTk3MTAsImV4cCI6MjA4NjY5NTcxMH0.BNCTfaqsul1LkDbG0PyOd63rYZCThUjGxAhgNMnda6w';
+        const MOYASAR_KEY = 'sb_publishable_dN0C1_LTxvKQ8KqUZVo9Ug_nhNzPK2q';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Form Submission Logic
         document.getElementById('bookingForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const submitBtn = document.getElementById('submitBtn');
             const btnText = document.getElementById('btnText');
             const btnIcon = document.getElementById('btnIcon');
-            const successMsg = document.getElementById('formSuccess');
             const errorMsg = document.getElementById('formError');
 
             // Loading state
             submitBtn.disabled = true;
             submitBtn.style.opacity = '0.7';
-            btnText.innerText = 'جاري الإرسال...';
+            btnText.innerText = 'جاري تحويلك للدفع...';
             btnIcon.innerText = 'sync';
             btnIcon.classList.add('animate-spin');
 
             errorMsg.classList.add('hidden');
-            successMsg.classList.add('hidden');
 
             try {
                 const formData = new FormData(this);
+                const customer_name = formData.get('الاسم');
+                const customer_phone = formData.get('الجوال');
+                const booking_date = formData.get('التاريخ');
+                const booking_time = formData.get('الوقت');
+                const package_type = formData.get('الباقة_المختارة');
+                const amount = package_type === 'جايروكوبتر' ? 30000 : 20000; // 300.00 or 200.00 SAR
 
-                // --- Email Management Logic ---
-                // Dynamic Subject for better inbox management
-                const customerName = formData.get('الاسم') || "Visitor";
-                formData.set('_subject', `New Flight Booking: ${customerName}`);
-                // ------------------------------
+                // 1. Create Booking in Supabase (Pending)
+                const { data: booking, error: dbError } = await supabaseClient
+                    .from('bookings')
+                    .insert([{
+                        customer_name,
+                        customer_phone,
+                        booking_date,
+                        booking_time,
+                        package: package_type,
+                        status: 'pending'
+                    }])
+                    .select()
+                    .single();
 
-                const response = await fetch(this.action, {
-                    method: "POST",
-                    body: formData,
-                    headers: {
-                        'Accept': 'application/json'
-                    }
-                });
+                if (dbError) throw dbError;
 
-                if (response.ok) {
-                    successMsg.classList.remove('hidden');
-                    this.reset();
-                } else {
-                    errorMsg.classList.remove('hidden');
-                }
+                // 2. Redirect to Moyasar Form
+                // We'll use a direct link to Moyasar's hosted checkout for simplicity and 100% reliability
+                const callbackUrl = `${window.location.origin}/success.html?id=${booking.qr_code_id}`;
+
+                // Construct Moyasar payment URL
+                const moyasarUrl = `https://api.moyasar.com/v1/payments.html?publishable_api_key=${MOYASAR_KEY}&amount=${amount}&currency=SAR&description=Flight%20Booking%20for%20${customer_name}&callback_url=${encodeURIComponent(callbackUrl)}&metadata[booking_id]=${booking.id}`;
+
+                window.location.href = moyasarUrl;
+
             } catch (error) {
                 console.error("Submission Error:", error);
+                errorMsg.innerText = "عذراً، حدث خطأ أثناء معالجة الطلب. يرجى المحاولة لاحقاً.";
                 errorMsg.classList.remove('hidden');
-            } finally {
-                // Reset button state
                 submitBtn.disabled = false;
                 submitBtn.style.opacity = '1';
                 btnText.innerText = 'إرسال الطلب';

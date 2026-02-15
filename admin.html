@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>لوحة التحكم | نادي الحريضة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Noto Sans Arabic', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+    <div id="login-container" class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-6 text-center text-indigo-900">دخول الإدارة</h1>
+        <form id="login-form" class="space-y-4">
+            <input type="email" id="email" placeholder="البريد الإلكتروني" class="w-full p-4 border rounded-xl"
+                required />
+            <input type="password" id="password" placeholder="كلمة المرور" class="w-full p-4 border rounded-xl"
+                required />
+            <button type="submit"
+                class="w-full bg-indigo-600 text-white py-4 rounded-xl font-bold hover:bg-indigo-700 transition-all">دخول</button>
+            <button type="button" onclick="resetPassword()"
+                class="text-sm text-indigo-600 font-bold block mx-auto mt-2">نسيت كلمة المرور؟</button>
+        </form>
+    </div>
+
+    <div id="dashboard-container" class="hidden w-full max-w-6xl p-6">
+        <div class="flex justify-between items-center mb-10">
+            <h1 class="text-3xl font-black text-indigo-900">إدارة الحجوزات</h1>
+            <button onclick="logout()" class="text-red-500 font-bold">خروج</button>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-sm border overflow-hidden">
+            <table class="w-full text-right">
+                <thead class="bg-gray-50 border-b">
+                    <tr>
+                        <th class="p-6">العميل</th>
+                        <th class="p-6">التاريخ والوقت</th>
+                        <th class="p-6">الباقة</th>
+                        <th class="p-6">الحالة</th>
+                        <th class="p-6">الإجراءات</th>
+                    </tr>
+                </thead>
+                <tbody id="bookings-list">
+                    <!-- Data will load here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Supabase
+        const SUPABASE_URL = 'https://ycknumkbdltbdkhmeyqp.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlja251bWtiZGx0YmRraG1leXFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExMTk3MTAsImV4cCI6MjA4NjY5NTcxMH0.BNCTfaqsul1LkDbG0PyOd63rYZCThUjGxAhgNMnda6w';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const loginForm = document.getElementById('login-form');
+        const loginContainer = document.getElementById('login-container');
+        const dashboardContainer = document.getElementById('dashboard-container');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: email.value,
+                password: password.value,
+            });
+            if (error) alert('خطأ في الدخول: ' + error.message);
+            else showDashboard();
+        });
+
+        async function showDashboard() {
+            loginContainer.classList.add('hidden');
+            dashboardContainer.classList.remove('hidden');
+            loadBookings();
+        }
+
+        async function loadBookings() {
+            const { data, error } = await supabaseClient.from('bookings').select('*').order('created_at', { ascending: false });
+            const list = document.getElementById('bookings-list');
+            list.innerHTML = '';
+            data.forEach(booking => {
+                list.innerHTML += `
+                    <tr class="border-b">
+                        <td class="p-6 font-bold">${booking.customer_name}<br><span class="text-xs text-gray-400 font-normal">${booking.customer_phone}</span></td>
+                        <td class="p-6">${booking.booking_date} | ${booking.booking_time}</td>
+                        <td class="p-6"><span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold">${booking.package}</span></td>
+                        <td class="p-6"><span class="status-badge ${booking.status}">${booking.status === 'paid' ? 'تم الدفع' : 'قيد الانتظار'}</span></td>
+                        <td class="p-6">
+                            <button onclick="copyMsg('${booking.customer_name}', '${booking.booking_date}', '${booking.booking_time}', '${booking.qr_code_id}')" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-xs font-bold">نسخ رسالة QR</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function copyMsg(name, date, time, qr) {
+            const msg = `مرحباً ${name}!\nشكراً لحجزك في نادي الحريضة للطيران.\nموعدك هو يوم ${date} الساعة ${time}.\nيرجى إبراز هذا الرمز عند الوصول:\nhttps://alharidha.com/verify.html?id=${qr}`;
+            navigator.clipboard.writeText(msg);
+            alert('تم نسخ الرسالة! أرسلها للعميل في واتساب.');
+        }
+
+        async function logout() {
+            await supabaseClient.auth.signOut();
+            window.location.reload();
+        }
+
+        async function resetPassword() {
+            const emailAddr = prompt('أدخل بريدك الإلكتروني لإعادة تعيين كلمة المرور:');
+            if (emailAddr) {
+                const { error } = await supabaseClient.auth.resetPasswordForEmail(emailAddr);
+                if (error) alert(error.message);
+                else alert('تم إرسال رابط إعادة التعيين لبريدك.');
+            }
+        }
+    </script>
+    <style>
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-weight: bold;
+            font-size: 10px;
+        }
+
+        .paid {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .pending {
+            background: #fef9c3;
+            color: #854d0e;
+        }
+    </style>
+</body>
+
+</html>
