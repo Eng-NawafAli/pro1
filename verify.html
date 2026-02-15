@@ -120,6 +120,9 @@
                 return;
             }
 
+            // Check if admin is logged in
+            const { data: { session } } = await supabaseClient.auth.getSession();
+
             const { data, error } = await supabaseClient
                 .from('bookings')
                 .select('*')
@@ -136,7 +139,13 @@
                     renderState('تم الاستخدام مسبقاً', 'ALREADY SCANNED', 'warning');
                 } else if (data.status === 'paid') {
                     renderState('حجز صالح ومدفوع', 'AUTHORIZED_READY', 'success');
-                    document.getElementById('action-zone').classList.remove('hidden');
+
+                    // Only show button if ADMIN is logged in
+                    if (session) {
+                        document.getElementById('action-zone').classList.remove('hidden');
+                    } else {
+                        document.getElementById('status-subtitle').innerText = "يرجى تسجيل الدخول كمسؤول للتفعيل";
+                    }
                 } else {
                     renderState('بانتظار الدفع', 'NOT_YET_PAID', 'error');
                 }
@@ -167,14 +176,23 @@
         }
 
         async function approveBooking() {
+            const btn = document.getElementById('approve-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="material-icons animate-spin">sync</span>';
+
             const { error } = await supabaseClient
                 .from('bookings')
                 .update({ status: 'completed' })
                 .eq('qr_code_id', bookingId);
 
             if (!error) {
-                alert('تم تسجيل الدخول بنجاح!');
-                window.location.reload();
+                renderState('تم الاعتماد بنجاح', 'FLIGHT LOGGED', 'success');
+                document.getElementById('action-zone').classList.add('hidden');
+                document.getElementById('error-zone').classList.remove('hidden');
+            } else {
+                alert('خطأ في الاعتماد: ' + error.message);
+                btn.disabled = false;
+                btn.innerHTML = '<span>اعتماد الصعود للطائرة</span><span class="material-icons text-sm">flight_takeoff</span>';
             }
         }
 
