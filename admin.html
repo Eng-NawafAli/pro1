@@ -468,10 +468,22 @@
         function copyMsg(name, date, time, qr) {
             const currentDir = window.location.href.substring(0, window.location.href.lastIndexOf("/"));
             const verifyLink = `${currentDir}/verify.html?qr=${qr}`;
-            // Direct Link to high-res QR for WhatsApp Preview
-            const qrImg = `https://quickchart.io/qr?text=${encodeURIComponent(verifyLink)}&size=800`;
 
-            const msg = `مرحباً ${name}!\n\nيسرنا حجزك في نادي الحريضة للطيران ✈️\n\n📌 تفاصيل الرحلة:\n🗓️ التاريخ: ${date}\n⏰ الوقت: ${time}\n\nيرجى فتح رابط الرمز الخاص بك وإظهاره للموظف عند الوصول لتسجيل الدخول:\n${qrImg}\n\nنتطلع لرؤيتك في السماء! 🛫`;
+            // Beautiful branded QR code with indigo color and styling
+            const qrImg = `https://quickchart.io/qr?text=${encodeURIComponent(verifyLink)}&size=800&dark=6366f1&light=ffffff&ecLevel=H&margin=2`;
+
+            const msg = `مرحباً ${name}!
+
+يسرنا حجزك في نادي الحريضة للطيران ✈️
+
+📌 تفاصيل الرحلة:
+🗓️ التاريخ: ${date}
+⏰ الوقت: ${time}
+
+يرجى فتح رابط الرمز الخاص بك وإظهاره للموظف عند الوصول لتسجيل الدخول:
+${qrImg}
+
+نتطلع لرؤيتك في السماء! 🛫`;
 
             navigator.clipboard.writeText(msg).then(() => {
                 const toast = document.createElement('div');
