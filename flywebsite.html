@@ -833,7 +833,7 @@
                 document.getElementById('bookingForm').classList.add('hidden');
                 document.getElementById('paymentContainer').classList.remove('hidden');
 
-                const callbackUrl = `${window.location.origin}/success.html?id=${booking.qr_code_id}`;
+                const callbackUrl = window.location.href.substring(0, window.location.href.lastIndexOf("/")) + "/success.html?qr=" + booking.qr_code_id;
 
                 Moyasar.init({
                     element: '.mysr-form',

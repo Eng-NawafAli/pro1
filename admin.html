@@ -66,12 +66,26 @@
 
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const { data, error } = await supabase.auth.signInWithPassword({
-                email: email.value,
-                password: password.value,
+            const emailVal = document.getElementById('email').value;
+            const passVal = document.getElementById('password').value;
+
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerText;
+            submitBtn.innerText = 'جاري التحقق...';
+            submitBtn.disabled = true;
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: emailVal,
+                password: passVal,
             });
-            if (error) alert('خطأ في الدخول: ' + error.message);
-            else showDashboard();
+
+            if (error) {
+                alert('خطأ في الدخول: ' + error.message);
+                submitBtn.innerText = originalText;
+                submitBtn.disabled = false;
+            } else {
+                showDashboard();
+            }
         });
 
         async function showDashboard() {

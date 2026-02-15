@@ -38,7 +38,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const urlParams = new URLSearchParams(window.location.search);
-        const qrId = urlParams.get('id');
+        const qrId = urlParams.get('qr');
         const status = urlParams.get('status');
 
         async function updateStatus() {
