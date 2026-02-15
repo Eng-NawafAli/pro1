@@ -68,12 +68,38 @@
             .glass {
                 padding: 1.5rem !important;
                 border-radius: 2rem !important;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
             }
 
-            input,
-            select,
-            button {
-                border-radius: 1.25rem !important;
+            .premium-input {
+                font-size: 16px !important;
+                /* Prevents iOS zoom */
+                height: 3.5rem !important;
+                border-radius: 1rem !important;
+                background: rgba(255, 255, 255, 0.05) !important;
+                border: 1px solid rgba(255, 255, 255, 0.1) !important;
+                padding-right: 3rem !important;
+                transition: all 0.3s ease !important;
+            }
+
+            .premium-input:focus {
+                background: rgba(255, 255, 255, 0.1) !important;
+                border-color: var(--primary) !important;
+                box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1) !important;
+            }
+
+            .input-wrapper {
+                position: relative;
+            }
+
+            .input-icon {
+                position: absolute;
+                top: 50%;
+                right: 1.25rem;
+                transform: translateY(-50%);
+                color: var(--primary);
+                font-size: 1.25rem;
+                pointer-events: none;
             }
         }
     </style>
@@ -487,45 +513,46 @@
                         class="glass p-6 md:p-10 rounded-[2.5rem] md:rounded-[3rem] shadow-xl border border-primary/10">
                         <form id="bookingForm" class="space-y-6">
 
-                            <div class="grid md:grid-cols-2 gap-6">
-                                <input required name="الاسم" type="text" placeholder="الاسم الكامل"
-                                    class="w-full bg-slate-100 dark:bg-white/10 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-primary font-bold text-sm text-center md:text-right" />
-                                <input required name="الجوال" type="tel" placeholder="رقم الجوال (05xxxxxxxx)"
-                                    pattern="^05[0-9]{8}$" maxlength="10"
-                                    class="w-full bg-slate-100 dark:bg-white/10 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-primary font-bold text-sm text-center md:text-right placeholder:text-slate-400">
+                            <div class="grid md:grid-cols-2 gap-5">
+                                <div class="input-wrapper">
+                                    <span class="material-icons input-icon">person</span>
+                                    <input required name="الاسم" type="text" placeholder="الاسم الكامل"
+                                        class="premium-input w-full px-6 focus:ring-2 focus:ring-primary font-bold text-sm bg-slate-100 dark:bg-white/10 border-none rounded-2xl" />
+                                </div>
+                                <div class="input-wrapper">
+                                    <span class="material-icons input-icon">phone_iphone</span>
+                                    <input required name="الجوال" type="tel" placeholder="رقم الجوال (05xxxxxxxx)"
+                                        pattern="^05[0-9]{8}$" maxlength="10"
+                                        class="premium-input w-full px-6 focus:ring-2 focus:ring-primary font-bold text-sm bg-slate-100 dark:bg-white/10 border-none rounded-2xl text-ltr" />
+                                </div>
                             </div>
-                            <div class="space-y-4">
+
+                            <div class="space-y-3">
                                 <label
-                                    class="text-sm font-bold text-slate-800 dark:text-white block px-2 tracking-tight">التاريخ</label>
-                                <div class="space-y-3">
-                                    <input required name="التاريخ" type="date" id="date_input"
-                                        class="w-full bg-slate-100 dark:bg-white/10 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-primary font-bold text-sm text-center md:text-right" />
-                                    <div class="flex gap-2">
-                                        <button type="button" onclick="setDateQuickly(0)"
-                                            class="flex-1 py-2 rounded-xl bg-primary/5 border border-primary/20 text-primary font-bold text-[10px] hover:bg-primary hover:text-white transition-all">اليوم</button>
-                                        <button type="button" onclick="setDateQuickly(1)"
-                                            class="flex-1 py-2 rounded-xl bg-primary/5 border border-primary/20 text-primary font-bold text-[10px] hover:bg-primary hover:text-white transition-all">غداً</button>
+                                    class="text-xs font-black text-slate-400 dark:text-slate-400 uppercase tracking-widest px-2 block">تفاصيل
+                                    الحجز</label>
+                                <div class="grid md:grid-cols-2 gap-5">
+                                    <div class="input-wrapper">
+                                        <span class="material-icons input-icon">calendar_today</span>
+                                        <input required name="التاريخ" type="date" id="date_input"
+                                            class="premium-input w-full px-6 focus:ring-2 focus:ring-primary font-bold text-sm bg-slate-100 dark:bg-white/10 border-none rounded-2xl" />
+                                    </div>
+                                    <div class="input-wrapper">
+                                        <span class="material-icons input-icon">flight</span>
+                                        <select required name="الباقة_المختارة" id="flight_type_select"
+                                            class="premium-input w-full px-12 focus:ring-2 focus:ring-primary font-bold text-sm bg-slate-100 dark:bg-white/10 border-none rounded-2xl appearance-none">
+                                            <option value="جايروكوبتر">جايروكوبتر (300 ريال)</option>
+                                            <option value="ترايك">ترايك (200 ريال)</option>
+                                        </select>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="space-y-4">
-                                <label
-                                    class="text-sm font-bold text-slate-800 dark:text-white block px-2 tracking-tight">الباقة</label>
-                                <select required name="الباقة_المختارة" id="flight_type_select"
-                                    class="w-full bg-slate-100 dark:bg-white/10 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-primary font-bold text-sm text-center md:text-right">
-                                    <option value="جايروكوبتر">جايروكوبتر (300 ريال)</option>
-                                    <option value="ترايك">ترايك (200 ريال)</option>
-                                </select>
-                            </div>
-
-                            <div class="space-y-4">
-                                <label
-                                    class="text-sm font-bold text-slate-800 dark:text-white block px-2 tracking-tight mobile-label-center">الوقت
-                                    المفضل</label>
+                            <div class="input-wrapper">
+                                <span class="material-icons input-icon">schedule</span>
                                 <select required name="الوقت" id="time_select"
-                                    class="w-full bg-slate-100 dark:bg-white/10 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-primary font-bold text-sm text-center md:text-right">
-                                    <option value="" disabled selected>اختر الوقت</option>
+                                    class="premium-input w-full px-12 focus:ring-2 focus:ring-primary font-bold text-sm bg-slate-100 dark:bg-white/10 border-none rounded-2xl appearance-none">
+                                    <option value="" disabled selected>اختر الوقت المفضل</option>
                                     <optgroup label="الفترة الصباحية">
                                         <option value="06:00">06:00 AM</option>
                                         <option value="06:30">06:30 AM</option>
@@ -550,30 +577,34 @@
                                 </select>
                             </div>
 
-                            <!-- Success Message Overlay -->
+                            <!-- Success/Error Overlays -->
                             <div id="formSuccess"
-                                class="hidden p-4 rounded-xl bg-green-500/10 text-green-500 text-center font-bold text-[11px] leading-tight flex flex-col gap-1 items-center">
-                                <span class="material-icons text-lg">check_circle</span>
-                                <div>تم إرسال طلبك بنجاح! سنتواصل معك قريباً.</div>
-                                <div class="text-[9px] opacity-60">* يرجى التحقق من تواصلنا معك عبر الواتساب.</div>
+                                class="hidden p-5 rounded-2xl bg-green-500/10 text-green-500 text-center font-bold text-xs ring-1 ring-green-500/20">
+                                <div class="flex items-center justify-center gap-2 mb-1">
+                                    <span class="material-icons text-lg">check_circle</span>
+                                    تم إرسال طلبك بنجاح!
+                                </div>
+                                <p class="text-[10px] opacity-70">سنتواصل معك عبر الواتساب للتأكيد.</p>
                             </div>
 
                             <div id="formError"
-                                class="hidden p-4 rounded-xl bg-red-500/10 text-red-500 text-center font-bold text-[11px]">
-                                عذراً، حدث خطأ أثناء الإرسال. يرجى المحاولة لاحقاً.
+                                class="hidden p-5 rounded-2xl bg-red-500/10 text-red-500 text-center font-bold text-xs ring-1 ring-red-500/20">
+                                عذراً، حدث خطأ. يرجى المحاولة لاحقاً.
                             </div>
 
-                            <button type="submit" id="submitBtn"
-                                class="w-full bg-primary text-white py-4 rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform text-lg flex items-center justify-center gap-3">
-                                <span id="btnText">إرسال الطلب</span>
-                                <span id="btnIcon" class="material-icons text-xl">send</span>
-                            </button>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <button type="submit" id="submitBtn"
+                                    class="w-full bg-primary text-white py-4 rounded-2xl font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-all text-sm flex items-center justify-center gap-3">
+                                    <span id="btnText">إرسال الطلب</span>
+                                    <span id="btnIcon" class="material-icons text-xl">send</span>
+                                </button>
 
-                            <a href="https://wa.me/966550066463"
-                                class="w-full bg-[#25D366] text-white py-4 rounded-2xl font-bold text-center flex items-center justify-center gap-3 hover:opacity-90 transition-opacity">
-                                <span class="material-symbols-outlined">chat</span>
-                                تواصل مباشر واتساب
-                            </a>
+                                <a href="https://wa.me/966550066463"
+                                    class="w-full bg-[#25D366] text-white py-4 rounded-2xl font-bold text-sm text-center flex items-center justify-center gap-3 hover:opacity-90 transition-all">
+                                    <span class="material-symbols-outlined">chat</span>
+                                    تواصل واتساب
+                                </a>
+                            </div>
                         </form>
 
                         <!-- Moyasar Payment Form Container (Hidden by default) -->

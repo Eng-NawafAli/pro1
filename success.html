@@ -159,43 +159,64 @@
         const urlParams = new URLSearchParams(window.location.search);
         const qrId = urlParams.get('qr');
         const status = urlParams.get('status');
+        const moyasarId = urlParams.get('id'); // Moyasar payment ID
+
+        console.log("Success Page Init:", { qrId, status, moyasarId });
 
         async function process() {
             showState('loading');
 
+            if (!qrId) {
+                console.error("Missing qrId in URL");
+                showState('error', 'خطأ: معرف الحجز مفقود.');
+                return;
+            }
+
+            // Robust status check: Moyasar uses 'paid', 'failed', 'authorized'
+            // My custom status is also 'paid'
+            if (status !== 'paid') {
+                console.warn("Payment status not paid:", status);
+                showState('error', 'تم إلغاء عملية الدفع أو فشلت.');
+                return;
+            }
+
             // Wait slightly for DB consistency
-            await new Promise(r => setTimeout(r, 2000));
+            await new Promise(r => setTimeout(r, 1500));
 
-            if (qrId && status === 'paid') {
-                try {
-                    // Try to update status to paid
-                    const { error: updateError } = await supabaseClient
-                        .from('bookings')
-                        .update({ status: 'paid' })
-                        .eq('qr_code_id', qrId);
+            try {
+                // Try to update status to paid
+                console.log("Attempting to update status to paid for qrId:", qrId);
+                const { error: updateError } = await supabaseClient
+                    .from('bookings')
+                    .update({
+                        status: 'paid',
+                        // Store Moyasar ID if available for auditing
+                        metadata: moyasarId ? { moyasar_payment_id: moyasarId } : {}
+                    })
+                    .eq('qr_code_id', qrId);
 
-                    if (updateError) throw updateError;
-
-                    // Double check if it actually updated
-                    const { data: checkData, error: checkError } = await supabaseClient
-                        .from('bookings')
-                        .select('status')
-                        .eq('qr_code_id', qrId)
-                        .single();
-
-                    if (checkData && checkData.status === 'paid') {
-                        showState('success');
-                    } else {
-                        throw new Error("تأكيد الحالة فشل");
-                    }
-                } catch (e) {
-                    console.error("Process error:", e);
-                    showState('error', 'تعذر تحديث الدفع. يرجى إعادة المحاولة.');
+                if (updateError) {
+                    console.error("Supabase Update Error:", updateError);
+                    throw updateError;
                 }
-            } else if (status === 'failed') {
-                showState('error', 'تم إلغاء العملية أو فشل الدفع.');
-            } else {
-                showState('error', 'بيانات الدفع غير مكتملة.');
+
+                // Double check if it actually updated
+                const { data: checkData, error: checkError } = await supabaseClient
+                    .from('bookings')
+                    .select('status')
+                    .eq('qr_code_id', qrId)
+                    .single();
+
+                if (checkData && checkData.status === 'paid') {
+                    console.log("Verification successful: Status is paid");
+                    showState('success');
+                } else {
+                    console.error("Verification failed: Status is", checkData?.status);
+                    throw new Error("تأكيد الحالة فشل في قاعدة البيانات");
+                }
+            } catch (e) {
+                console.error("Process Exception:", e);
+                showState('error', 'تعذر تحديث حالة الدفع. يرجى التواصل مع الإدارة.');
             }
         }
 
