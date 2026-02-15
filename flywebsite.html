@@ -843,6 +843,11 @@
                     publishable_api_key: MOYASAR_KEY,
                     callback_url: callbackUrl,
                     methods: ['creditcard', 'applepay', 'stcpay'],
+                    apple_pay: {
+                        label: 'نادي الحريضة للطيران',
+                        country: 'SA',
+                        validate_merchant_url: 'https://api.moyasar.com/v1/applepay/initiate'
+                    },
                     metadata: {
                         booking_id: booking.id
                     }
