@@ -763,7 +763,7 @@
         // --- Supabase & Moyasar Integration ---
         const SUPABASE_URL = 'https://ycknumkbdltbdkhmeyqp.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlja251bWtiZGx0YmRraG1leXFwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzExMTk3MTAsImV4cCI6MjA4NjY5NTcxMH0.BNCTfaqsul1LkDbG0PyOd63rYZCThUjGxAhgNMnda6w';
-        const MOYASAR_KEY = 'sb_publishable_dN0C1_LTxvKQ8KqUZVo9Ug_nhNzPK2q';
+        const MOYASAR_KEY = 'pk_test_WKoxoLysrVgd5iPaHKDZ84iJy9UBsjkt8LRkadEM';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // Form Submission Logic
@@ -820,8 +820,6 @@
 
             } catch (error) {
                 console.error("Submission Error:", error);
-                // Show the specific error to the user for debugging
-                alert("Submission Error: " + (error.message || JSON.stringify(error)));
                 errorMsg.innerText = "عذراً، حدث خطأ أثناء معالجة الطلب. يرجى المحاولة لاحقاً.";
                 errorMsg.classList.remove('hidden');
                 submitBtn.disabled = false;
