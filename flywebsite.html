@@ -958,13 +958,18 @@
 
                 const baseUrl = window.location.href.split('flywebsite.html')[0];
 
+                // Store booking QR in sessionStorage for success page fallback
+                sessionStorage.setItem('current_booking_qr', booking.qr_code_id);
+                sessionStorage.setItem('current_booking_id', booking.id);
+
                 Moyasar.init({
                     element: '.mys-payment-form',
-                    amount: amount, // Amount is already in halalas (30000 = 300 SAR)
+                    amount: amount,
                     currency: 'SAR',
                     description: `حجز رحلة ${package_type} - ${customer_name}`,
                     publishable_api_key: MOYASAR_KEY,
-                    callback_url: `${baseUrl}success.html`, // Fallback
+                    // Moyasar will redirect here after payment with ?id=PAYMENT_ID&status=STATUS
+                    callback_url: `${baseUrl}success.html?qr=${booking.qr_code_id}`,
                     methods: ['creditcard', 'applepay', 'stcpay'],
                     apple_pay: {
                         label: 'نادي الحريضة للطيران',
@@ -974,30 +979,6 @@
                     metadata: {
                         booking_id: booking.id,
                         qr_code_id: booking.qr_code_id
-                    },
-                    // Handle successful payment
-                    on_completed: function (payment) {
-                        console.log("=== PAYMENT COMPLETED ===");
-                        console.log("Payment:", payment);
-                        console.log("Building success URL with QR:", booking.qr_code_id);
-
-                        // Redirect to success page with proper parameters
-                        const successUrl = `${baseUrl}success.html?qr=${booking.qr_code_id}&status=${payment.status}&id=${payment.id}`;
-                        console.log("Redirecting to:", successUrl);
-                        window.location.href = successUrl;
-                    },
-                    // Handle failed payment
-                    on_failed: function (payment) {
-                        console.error("Payment failed:", payment);
-                        alert('فشلت عملية الدفع. يرجى المحاولة مرة أخرى.');
-                        // Reset form
-                        document.getElementById('paymentContainer').classList.add('hidden');
-                        document.getElementById('bookingForm').classList.remove('hidden');
-                        submitBtn.disabled = false;
-                        submitBtn.style.opacity = '1';
-                        btnText.innerText = 'إرسال الطلب';
-                        btnIcon.innerText = 'send';
-                        btnIcon.classList.remove('animate-spin');
                     }
                 });
 

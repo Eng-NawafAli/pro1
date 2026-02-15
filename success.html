@@ -157,9 +157,15 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const urlParams = new URLSearchParams(window.location.search);
-        const qrId = urlParams.get('qr');
+        let qrId = urlParams.get('qr');
         const status = urlParams.get('status');
         const moyasarId = urlParams.get('id'); // Moyasar payment ID
+
+        // Fallback: Check sessionStorage if QR is missing from URL
+        if (!qrId) {
+            qrId = sessionStorage.getItem('current_booking_qr');
+            console.log("QR not in URL, retrieved from sessionStorage:", qrId);
+        }
 
         console.log("Success Page Init:", { qrId, status, moyasarId });
 
@@ -167,7 +173,7 @@
             showState('loading');
 
             if (!qrId) {
-                console.error("Missing qrId in URL");
+                console.error("Missing qrId in URL and sessionStorage");
                 showState('error', 'خطأ: معرف الحجز مفقود.');
                 return;
             }
