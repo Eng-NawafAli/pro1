@@ -74,6 +74,7 @@
             submitBtn.innerText = 'جاري التحقق...';
             submitBtn.disabled = true;
 
+            console.log("Attempting login for:", emailVal);
             const { data, error } = await supabaseClient.auth.signInWithPassword({
                 email: emailVal,
                 password: passVal,
@@ -95,27 +96,44 @@
         }
 
         async function loadBookings() {
-            const { data, error } = await supabaseClient.from('bookings').select('*').order('created_at', { ascending: false });
-            const list = document.getElementById('bookings-list');
-            list.innerHTML = '';
-            data.forEach(booking => {
-                list.innerHTML += `
-                    <tr class="border-b">
-                        <td class="p-6 font-bold">${booking.customer_name}<br><span class="text-xs text-gray-400 font-normal">${booking.customer_phone}</span></td>
-                        <td class="p-6">${booking.booking_date} | ${booking.booking_time}</td>
-                        <td class="p-6"><span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold">${booking.package}</span></td>
-                        <td class="p-6"><span class="status-badge ${booking.status}">${booking.status === 'paid' ? 'تم الدفع' : 'قيد الانتظار'}</span></td>
-                        <td class="p-6">
-                            <button onclick="copyMsg('${booking.customer_name}', '${booking.booking_date}', '${booking.booking_time}', '${booking.qr_code_id}')" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-xs font-bold">نسخ رسالة QR</button>
-                        </td>
-                    </tr>
-                `;
-            });
+            try {
+                const { data, error } = await supabaseClient
+                    .from('bookings')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                const list = document.getElementById('bookings-list');
+                list.innerHTML = '';
+
+                if (!data || data.length === 0) {
+                    list.innerHTML = '<tr><td colspan="5" class="p-10 text-center text-gray-400 font-bold">لا يوجد حجوزات حالياً</td></tr>';
+                    return;
+                }
+
+                data.forEach(booking => {
+                    list.innerHTML += `
+                        <tr class="border-b hover:bg-gray-50/50 transition-colors">
+                            <td class="p-6 font-bold text-indigo-900">${booking.customer_name}<br><span class="text-xs text-gray-400 font-normal">${booking.customer_phone}</span></td>
+                            <td class="p-6 text-sm">${booking.booking_date} | ${booking.booking_time}</td>
+                            <td class="p-6"><span class="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold">${booking.package}</span></td>
+                            <td class="p-6"><span class="status-badge ${booking.status}">${booking.status === 'paid' ? 'تم الدفع' : (booking.status === 'completed' ? 'تم التنفيذ' : 'قيد الانتظار')}</span></td>
+                            <td class="p-6">
+                                <button onclick="copyMsg('${booking.customer_name}', '${booking.booking_date}', '${booking.booking_time}', '${booking.qr_code_id}')" class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-indigo-700 transition-all shadow-md active:scale-95">نسخ رسالة QR</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                console.error("Load bookings error:", err);
+                document.getElementById('bookings-list').innerHTML = '<tr><td colspan="5" class="p-10 text-center text-red-500 font-bold">حدث خطأ أثناء تحميل البيانات</td></tr>';
+            }
         }
 
         function copyMsg(name, date, time, qr) {
-            const domain = window.location.origin;
-            const verifyLink = `${domain}/verify.html?id=${qr}`;
+            const currentDir = window.location.href.substring(0, window.location.href.lastIndexOf("/"));
+            const verifyLink = `${currentDir}/verify.html?id=${qr}`;
             // Use QuickCharts for a real QR code image
             const qrImageUrl = `https://quickchart.io/qr?text=${encodeURIComponent(verifyLink)}&size=300`;
 
