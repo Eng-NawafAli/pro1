@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>مسح رمز QR | نادي الحريضة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Noto+Sans+Arabic:wght@400;700;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+        }
+
+        body {
+            font-family: 'Noto Sans Arabic', 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .scanner-container {
+            background: white;
+            border-radius: 2rem;
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.3);
+        }
+
+        #reader {
+            border-radius: 1.5rem;
+            overflow: hidden;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-6">
+    <div class="scanner-container p-8 w-full max-w-lg space-y-6">
+        <div class="text-center space-y-3">
+            <div class="w-16 h-16 bg-indigo-600 rounded-3xl flex items-center justify-center mx-auto">
+                <span class="material-icons text-white text-3xl">qr_code_scanner</span>
+            </div>
+            <h1 class="text-2xl font-black text-slate-900">مسح رمز الحجز</h1>
+            <p class="text-sm text-slate-500 font-bold">وجه الكاميرا نحو رمز QR الخاص بالعميل</p>
+        </div>
+
+        <div id="reader" class="w-full"></div>
+
+        <div id="status" class="hidden p-4 rounded-2xl text-center">
+            <p class="font-bold text-sm"></p>
+        </div>
+
+        <button onclick="goBack()"
+            class="w-full py-4 text-slate-400 hover:text-slate-900 font-black text-xs uppercase tracking-widest transition-all">
+            <span class="material-icons text-sm align-middle">arrow_back</span>
+            العودة للوحة التحكم
+        </button>
+    </div>
+
+    <script>
+        const statusDiv = document.getElementById('status');
+
+        function showStatus(message, type = 'info') {
+            statusDiv.classList.remove('hidden', 'bg-green-50', 'bg-red-50', 'bg-blue-50');
+            statusDiv.classList.add(type === 'success' ? 'bg-green-50' : type === 'error' ? 'bg-red-50' : 'bg-blue-50');
+            statusDiv.querySelector('p').textContent = message;
+            statusDiv.querySelector('p').className = `font-bold text-sm ${type === 'success' ? 'text-green-600' : type === 'error' ? 'text-red-600' : 'text-blue-600'}`;
+        }
+
+        function goBack() {
+            window.location.href = 'admin.html';
+        }
+
+        function onScanSuccess(decodedText, decodedResult) {
+            console.log(`QR Code detected: ${decodedText}`);
+            showStatus('✓ تم المسح بنجاح! جاري التحقق...', 'success');
+
+            // Stop scanner
+            html5QrcodeScanner.clear();
+
+            // Redirect to verify page with QR code
+            setTimeout(() => {
+                window.location.href = `verify.html?qr=${decodedText}`;
+            }, 500);
+        }
+
+        function onScanFailure(error) {
+            // Ignore scan failures (happens continuously while scanning)
+        }
+
+        // Initialize scanner
+        const html5QrcodeScanner = new Html5QrcodeScanner(
+            "reader",
+            {
+                fps: 10,
+                qrbox: { width: 250, height: 250 },
+                aspectRatio: 1.0,
+                formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE]
+            },
+            false
+        );
+
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+
+        showStatus('📷 جاري تشغيل الكاميرا...', 'info');
+    </script>
+</body>
+
+</html>
