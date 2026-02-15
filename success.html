@@ -184,38 +184,68 @@
             await new Promise(r => setTimeout(r, 1500));
 
             try {
-                // Try to update status to paid
-                console.log("Attempting to update status to paid for qrId:", qrId);
+                console.log("=== PAYMENT UPDATE DEBUG ===");
+                console.log("qrId:", qrId);
+                console.log("status param:", status);
+                console.log("moyasarId:", moyasarId);
+
                 // Build update object — only use columns that exist in schema
                 const updateData = { status: 'paid' };
                 if (moyasarId) updateData.payment_id = moyasarId;
 
-                const { error: updateError } = await supabaseClient
+                console.log("Update data:", JSON.stringify(updateData));
+                console.log("Attempting update...");
+
+                const { data: updateResult, error: updateError } = await supabaseClient
                     .from('bookings')
                     .update(updateData)
-                    .eq('qr_code_id', qrId);
+                    .eq('qr_code_id', qrId)
+                    .select(); // Return the updated row
+
+                console.log("Update result:", updateResult);
+                console.log("Update error:", updateError);
 
                 if (updateError) {
-                    console.error("Supabase Update Error:", updateError);
+                    console.error("❌ Supabase Update Error Details:", {
+                        message: updateError.message,
+                        details: updateError.details,
+                        hint: updateError.hint,
+                        code: updateError.code
+                    });
                     throw updateError;
                 }
+
+                if (!updateResult || updateResult.length === 0) {
+                    console.error("❌ No rows updated! QR ID might not exist:", qrId);
+                    throw new Error("لم يتم العثور على الحجز بهذا الرمز");
+                }
+
+                console.log("✅ Update successful! Updated rows:", updateResult.length);
 
                 // Double check if it actually updated
                 const { data: checkData, error: checkError } = await supabaseClient
                     .from('bookings')
-                    .select('status')
+                    .select('status, payment_id')
                     .eq('qr_code_id', qrId)
                     .single();
 
+                console.log("Verification data:", checkData);
+                console.log("Verification error:", checkError);
+
                 if (checkData && checkData.status === 'paid') {
-                    console.log("Verification successful: Status is paid");
+                    console.log("✅ Verification successful: Status is paid");
                     showState('success');
                 } else {
-                    console.error("Verification failed: Status is", checkData?.status);
+                    console.error("❌ Verification failed: Status is", checkData?.status);
                     throw new Error("تأكيد الحالة فشل في قاعدة البيانات");
                 }
             } catch (e) {
-                console.error("Process Exception:", e);
+                console.error("❌ Process Exception:", e);
+                console.error("Exception details:", {
+                    name: e.name,
+                    message: e.message,
+                    stack: e.stack
+                });
                 showState('error', 'تعذر تحديث حالة الدفع. يرجى التواصل مع الإدارة.');
             }
         }
