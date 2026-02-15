@@ -5,6 +5,9 @@
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>نادي الحريضة للطيران الرياضي | لؤلؤة عسير</title>
+    <!-- Moyasar Assets -->
+    <link rel="stylesheet" href="https://cdn.moyasar.com/mpf/1.13.0/moyasar.css" />
+    <script src="https://cdn.moyasar.com/mpf/1.13.0/moyasar.js"></script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link
@@ -510,8 +513,10 @@
                                 <span id="btnIcon" class="material-icons text-xl">send</span>
                             </button>
 
-                            <span class="material-symbols-outlined">chat</span>
-                            تواصل مباشر واتساب
+                            <a href="https://wa.me/966550066463"
+                                class="w-full bg-[#25D366] text-white py-4 rounded-2xl font-bold text-center flex items-center justify-center gap-3 hover:opacity-90 transition-opacity">
+                                <span class="material-symbols-outlined">chat</span>
+                                تواصل مباشر واتساب
                             </a>
                         </form>
 
@@ -529,6 +534,7 @@
                         </div>
                     </div>
                 </div>
+            </div>
             </div>
         </section>
     </main>
@@ -823,14 +829,24 @@
 
                 if (dbError) throw dbError;
 
-                // 2. Redirect to Moyasar Form
-                // We'll use a direct link to Moyasar's hosted checkout for simplicity and 100% reliability
+                // 2. Hide Form and Show payment form
+                document.getElementById('bookingForm').classList.add('hidden');
+                document.getElementById('paymentContainer').classList.remove('hidden');
+
                 const callbackUrl = `${window.location.origin}/success.html?id=${booking.qr_code_id}`;
 
-                // Construct Moyasar payment URL
-                const moyasarUrl = `https://api.moyasar.com/v1/payments.html?publishable_api_key=${MOYASAR_KEY}&amount=${amount}&currency=SAR&description=Flight%20Booking%20for%20${customer_name}&callback_url=${encodeURIComponent(callbackUrl)}&metadata[booking_id]=${booking.id}`;
-
-                window.location.href = moyasarUrl;
+                Moyasar.init({
+                    element: '.mysr-form',
+                    amount: amount,
+                    currency: 'SAR',
+                    description: `Flight Booking for ${customer_name}`,
+                    publishable_api_key: MOYASAR_KEY,
+                    callback_url: callbackUrl,
+                    methods: ['creditcard', 'applepay', 'stcpay'],
+                    metadata: {
+                        booking_id: booking.id
+                    }
+                });
 
             } catch (error) {
                 console.error("Submission Error:", error);
@@ -855,6 +871,21 @@
             const modal = document.getElementById('termsModal');
             modal.classList.add('hidden');
             document.body.style.overflow = 'auto';
+        }
+
+        function cancelPayment() {
+            if (confirm('هل أنت متأكد من إلغاء عملية الدفع؟')) {
+                document.getElementById('paymentContainer').classList.add('hidden');
+                document.getElementById('bookingForm').classList.remove('hidden');
+                const submitBtn = document.getElementById('submitBtn');
+                const btnText = document.getElementById('btnText');
+                const btnIcon = document.getElementById('btnIcon');
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                btnText.innerText = 'إرسال الطلب';
+                btnIcon.innerText = 'send';
+                btnIcon.classList.remove('animate-spin');
+            }
         }
     </script>
 </body>
