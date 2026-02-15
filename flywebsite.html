@@ -948,7 +948,6 @@
                 document.getElementById('paymentContainer').classList.remove('hidden');
 
                 const baseUrl = window.location.href.split('flywebsite.html')[0];
-                const callbackUrl = `${baseUrl}success.html?qr=${booking.qr_code_id}&status=paid`;
 
                 Moyasar.init({
                     element: '.mys-payment-form',
@@ -956,7 +955,7 @@
                     currency: 'SAR',
                     description: `حجز رحلة ${package_type} - ${customer_name}`,
                     publishable_api_key: MOYASAR_KEY,
-                    callback_url: callbackUrl,
+                    callback_url: `${baseUrl}success.html`, // Fallback
                     methods: ['creditcard', 'applepay', 'stcpay'],
                     apple_pay: {
                         label: 'نادي الحريضة للطيران',
@@ -964,7 +963,28 @@
                         validate_merchant_url: 'https://api.moyasar.com/v1/applepay/initiate'
                     },
                     metadata: {
-                        booking_id: booking.id
+                        booking_id: booking.id,
+                        qr_code_id: booking.qr_code_id
+                    },
+                    // Handle successful payment
+                    on_completed: function (payment) {
+                        console.log("Payment completed:", payment);
+                        // Redirect to success page with proper parameters
+                        const successUrl = `${baseUrl}success.html?qr=${booking.qr_code_id}&status=${payment.status}&id=${payment.id}`;
+                        window.location.href = successUrl;
+                    },
+                    // Handle failed payment
+                    on_failed: function (payment) {
+                        console.error("Payment failed:", payment);
+                        alert('فشلت عملية الدفع. يرجى المحاولة مرة أخرى.');
+                        // Reset form
+                        document.getElementById('paymentContainer').classList.add('hidden');
+                        document.getElementById('bookingForm').classList.remove('hidden');
+                        submitBtn.disabled = false;
+                        submitBtn.style.opacity = '1';
+                        btnText.innerText = 'إرسال الطلب';
+                        btnIcon.innerText = 'send';
+                        btnIcon.classList.remove('animate-spin');
                     }
                 });
 
