@@ -868,10 +868,10 @@
 
                 Moyasar.init({
                     element: '.mys-payment-form',
-                    amount: amount * 100,
+                    amount: amount, // Amount is already in halalas (30000 = 300 SAR)
                     currency: 'SAR',
                     description: `حجز رحلة ${package_type} - ${customer_name}`,
-                    publishable_api_key: 'pk_live_xxxx', // User should replace with real key
+                    publishable_api_key: MOYASAR_KEY,
                     callback_url: callbackUrl,
                     methods: ['creditcard', 'applepay', 'stcpay'],
                     apple_pay: {
