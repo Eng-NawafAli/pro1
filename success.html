@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>تم النجاح | نادي الحريضة</title>
+    <title>تم الحجز بنجاح | نادي الحريضة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link
@@ -14,77 +14,95 @@
     <style>
         :root {
             --primary: #6366f1;
-            --bg-dark: #020617;
+            --secondary: #ec4899;
+            --bg-light: #f8fafc;
         }
 
         body {
             font-family: 'Noto Sans Arabic', 'Outfit', sans-serif;
-            background-color: var(--bg-dark);
-            color: #f8fafc;
+            background-color: var(--bg-light);
+            color: #1e293b;
             overflow: hidden;
         }
 
-        .glass {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .animate-gradient {
-            background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #020617 100%);
-        }
-
         .success-card {
-            box-shadow: 0 0 60px rgba(99, 102, 241, 0.1);
+            background: white;
+            border-radius: 4rem;
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.03);
         }
 
         .animate-check {
-            animation: check-bounce 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation: check-bounce 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
         @keyframes check-bounce {
             0% {
-                transform: scale(0) rotate(-45deg);
+                transform: scale(0);
                 opacity: 0;
             }
 
+            70% {
+                transform: scale(1.1);
+            }
+
             100% {
-                transform: scale(1) rotate(0);
+                transform: scale(1);
                 opacity: 1;
             }
+        }
+
+        .wave {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%236366f1" fill-opacity="0.05" d="M0,192L48,197.3C96,203,192,213,288,192C384,171,480,117,576,112C672,107,768,149,864,181.3C960,213,1056,235,1152,213.3C1248,192,1344,128,1392,96L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
         }
     </style>
 </head>
 
-<body class="animate-gradient flex items-center justify-center min-h-screen p-6">
+<body class="flex items-center justify-center min-h-screen p-6 relative">
+    <div class="wave"></div>
+
     <div
-        class="glass p-12 rounded-[3.5rem] w-full max-w-sm text-center space-y-10 success-card animate-in fade-in zoom-in duration-1000">
-        <!-- Success Icon -->
-        <div
-            class="w-24 h-24 bg-green-500 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-[0_0_30px_rgba(34,197,94,0.3)] animate-check">
-            <span class="material-icons text-white text-5xl">verified</span>
+        class="success-card p-12 md:p-16 w-full max-w-lg text-center space-y-12 relative z-10 animate-in fade-in zoom-in duration-1000">
+        <!-- Modern Icon -->
+        <div class="relative w-32 h-32 mx-auto">
+            <div class="absolute inset-0 bg-green-500/10 rounded-full animate-ping"></div>
+            <div
+                class="relative w-32 h-32 bg-green-500 rounded-full flex items-center justify-center shadow-2xl shadow-green-200 animate-check">
+                <span class="material-icons text-white text-6xl">check</span>
+            </div>
         </div>
 
         <div class="space-y-4">
-            <h1 class="text-4xl font-black text-white italic tracking-tight uppercase">MISSION SUCCESS</h1>
-            <p class="text-slate-400 text-sm font-bold leading-relaxed">
-                تمت عملية الدفع بنجاح. سنقوم بمراجعة حجزك الآن وإرسال رمز الـ QR الخاص بك عبر الواتساب قريباً.
+            <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">شكراً لك!</h1>
+            <p class="text-slate-500 text-lg font-medium leading-relaxed">
+                تمت عملية الحجز والدفع بنجاح. سنقوم بإرسال رمز الدخول الخاص بك عبر الواتساب قريباً.
             </p>
         </div>
 
-        <div class="p-6 bg-white/[0.02] rounded-3xl border border-white/5 space-y-1">
-            <p class="text-[9px] font-black text-slate-600 uppercase tracking-[0.3em]">FLIGHT MANIFEST STATUS</p>
-            <p class="text-green-500 text-xs font-black uppercase tracking-widest">Awaiting Staff Clearance</p>
+        <div class="grid grid-cols-2 gap-4">
+            <div class="bg-slate-50 p-4 rounded-3xl border border-slate-100">
+                <p class="text-[10px] uppercase font-bold text-slate-400 mb-1">حالة الدفع</p>
+                <p class="text-green-600 font-bold">مكتملة بنجاح</p>
+            </div>
+            <div class="bg-slate-50 p-4 rounded-3xl border border-slate-100">
+                <p class="text-[10px] uppercase font-bold text-slate-400 mb-1">موعد الرحلة</p>
+                <p class="text-indigo-600 font-bold">قيد المراجعة</p>
+            </div>
         </div>
 
         <a href="flywebsite.html"
-            class="group block w-full bg-primary hover:bg-primary-light text-white py-5 rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2">
-            <span>RETURN TO HQ</span>
-            <span class="material-icons text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            class="group block w-full bg-slate-900 hover:bg-black text-white py-6 rounded-3xl font-bold text-lg shadow-2xl shadow-slate-200 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3">
+            <span>العودة للموقع</span>
+            <span class="material-icons opacity-50 group-hover:translate-x-1 transition-transform">arrow_back</span>
         </a>
 
-        <p class="text-[9px] font-black text-slate-700 uppercase tracking-widest italic">"See you in the skies of
-            Al-Haridha"</p>
+        <p class="text-sm font-bold text-slate-400 italic">"نراك قريباً في سماء الحريضة!"</p>
     </div>
 
     <script>

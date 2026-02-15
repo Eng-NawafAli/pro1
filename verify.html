@@ -14,128 +14,95 @@
     <style>
         :root {
             --primary: #6366f1;
-            --bg-dark: #020617;
+            --bg-body: #f1f5f9;
         }
 
         body {
             font-family: 'Noto Sans Arabic', 'Outfit', sans-serif;
-            background-color: var(--bg-dark);
-            color: #f8fafc;
+            background-color: var(--bg-body);
+            color: #1e293b;
             overflow: hidden;
         }
 
-        .glass {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        .verify-card {
+            background: white;
+            border-radius: 4rem;
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.03);
         }
 
-        .animate-gradient {
-            background: radial-gradient(circle at 50% 50%, #1e1b4b 0%, #020617 100%);
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: full;
         }
 
-        .status-card {
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        .animate-in {
+            animation: slide-up 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        .status-glow-green {
-            box-shadow: 0 0 30px rgba(16, 185, 129, 0.2);
-        }
-
-        .status-glow-red {
-            box-shadow: 0 0 30px rgba(244, 63, 94, 0.2);
-        }
-
-        .status-glow-amber {
-            box-shadow: 0 0 30px rgba(245, 158, 11, 0.2);
-        }
-
-        .pulse-icon {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                opacity: 1;
+        @keyframes slide-up {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
             }
 
-            50% {
-                transform: scale(1.1);
-                opacity: 0.8;
-            }
-
-            100% {
-                transform: scale(1);
+            to {
+                transform: translateY(0);
                 opacity: 1;
             }
         }
     </style>
 </head>
 
-<body class="animate-gradient flex items-center justify-center min-h-screen p-6">
+<body class="flex items-center justify-center min-h-screen p-6">
     <div id="main-card"
-        class="glass p-10 rounded-[3rem] w-full max-w-sm status-card animate-in fade-in slide-in-from-bottom-8 duration-700 relative overflow-hidden">
-        <div class="absolute -top-12 -left-12 w-48 h-48 bg-primary/5 rounded-full blur-3xl"></div>
+        class="verify-card p-12 w-full max-w-md text-center space-y-12 animate-in relative overflow-hidden">
 
-        <!-- Loading State -->
-        <div id="loader" class="text-center space-y-8 py-10">
-            <div class="w-20 h-20 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto"></div>
-            <div class="space-y-2">
-                <h2 class="text-xl font-black uppercase italic tracking-tighter">AUTHENTICATING</h2>
-                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Verifying flight authorization
-                    token...</p>
+        <!-- Status Icon Container -->
+        <div id="icon-container"
+            class="w-32 h-32 rounded-full flex items-center justify-center mx-auto shadow-2xl transition-all duration-500">
+            <span id="status-icon" class="material-icons text-6xl text-white">sync</span>
+        </div>
+
+        <div class="space-y-4">
+            <h2 id="status-title" class="text-3xl font-black text-slate-900 tracking-tight leading-none uppercase">جاري
+                التحقق</h2>
+            <p id="status-subtitle" class="text-xs font-bold text-slate-400 uppercase tracking-widest">Flight Manifest
+                Verification</p>
+        </div>
+
+        <!-- Detail Grid -->
+        <div class="bg-slate-50 rounded-[2.5rem] p-8 space-y-6 border border-slate-100 text-right">
+            <div class="flex justify-between items-center border-b border-slate-200 pb-4">
+                <span class="text-[10px] font-black text-slate-400 uppercase">اسم العميل</span>
+                <span id="res-name" class="text-sm font-black text-slate-900 italic">--</span>
+            </div>
+            <div class="flex justify-between items-center border-b border-slate-200 pb-4">
+                <span class="text-[10px] font-black text-slate-400 uppercase">جدول الرحلة</span>
+                <div class="text-left">
+                    <div id="res-date" class="text-xs font-black text-slate-900">--</div>
+                    <div id="res-time" class="text-[10px] font-bold text-slate-400 text-right uppercase">--</div>
+                </div>
+            </div>
+            <div class="flex justify-between items-center">
+                <span class="text-[10px] font-black text-slate-400 uppercase">الباقة المختارة</span>
+                <span id="res-package"
+                    class="px-4 py-1.5 bg-indigo-50 rounded-xl text-[10px] font-black text-indigo-600">--</span>
             </div>
         </div>
 
-        <!-- Result Content -->
-        <div id="content" class="hidden space-y-10">
-            <!-- Icon Result -->
-            <div id="icon-container"
-                class="w-32 h-32 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-2xl relative">
-                <span id="status-icon" class="material-icons text-6xl text-white"></span>
-                <div id="icon-pulse" class="absolute inset-0 rounded-[2.5rem] bg-current opacity-20 pulse-icon"></div>
-            </div>
+        <!-- Action Button -->
+        <div id="action-zone" class="hidden">
+            <button onclick="approveBooking()" id="approve-btn"
+                class="w-full bg-slate-900 hover:bg-black text-white py-6 rounded-3xl font-black text-sm uppercase tracking-widest shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3">
+                <span>اعتماد الصعود للطائرة</span>
+                <span class="material-icons text-sm">flight_takeoff</span>
+            </button>
+        </div>
 
-            <div class="text-center space-y-2">
-                <h2 id="status-title" class="text-3xl font-black tracking-tight leading-none uppercase italic"></h2>
-                <p id="status-subtitle" class="text-[10px] font-black uppercase tracking-[0.2em] opacity-50"></p>
-            </div>
-
-            <!-- Booking Details -->
-            <div class="bg-white/5 rounded-[2rem] p-8 space-y-6 border border-white/5">
-                <div class="flex justify-between items-center border-b border-white/5 pb-4">
-                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">PILOT NAME</span>
-                    <span id="res-name" class="text-sm font-black text-white"></span>
-                </div>
-                <div class="flex justify-between items-center border-b border-white/5 pb-4">
-                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">FLIGHT WINDOW</span>
-                    <div class="text-left">
-                        <div id="res-date" class="text-xs font-black text-white"></div>
-                        <div id="res-time" class="text-[9px] font-bold text-slate-500 text-right uppercase"></div>
-                    </div>
-                </div>
-                <div class="flex justify-between items-center">
-                    <span class="text-[9px] font-black text-slate-500 uppercase tracking-widest">SERVICE UNIT</span>
-                    <span id="res-package"
-                        class="px-3 py-1 bg-primary/10 rounded-lg text-[10px] font-black text-primary"></span>
-                </div>
-            </div>
-
-            <!-- Verification Action -->
-            <div id="action-zone" class="hidden pt-4">
-                <button onclick="approveBooking()" id="approve-btn"
-                    class="w-full bg-green-500 hover:bg-green-400 text-white py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3">
-                    <span>ثبات الصعود والتحرك</span>
-                    <span class="material-icons text-sm">flight_takeoff</span>
-                </button>
-            </div>
-
-            <!-- Close Action -->
-            <button onclick="window.close()"
-                class="w-full text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] hover:text-slate-400 transition-colors pt-4">DISMISS
-                PORTAL</button>
+        <div id="error-zone" class="hidden">
+            <button onclick="window.close()" class="w-full text-slate-400 font-bold text-sm">إغلاق النافذة</button>
         </div>
     </div>
 
@@ -149,7 +116,7 @@
 
         async function verify() {
             if (!bookingId) {
-                renderState('ERROR', 'INVALID_TOKEN', 'error');
+                renderState('كود غير صالح', 'ERROR_TOKEN_INVALID', 'error');
                 return;
             }
 
@@ -159,32 +126,26 @@
                 .eq('qr_code_id', bookingId)
                 .single();
 
-            setTimeout(() => {
-                document.getElementById('loader').classList.add('hidden');
-                document.getElementById('content').classList.remove('hidden');
+            if (data) {
+                document.getElementById('res-name').innerText = data.customer_name;
+                document.getElementById('res-date').innerText = data.booking_date;
+                document.getElementById('res-time').innerText = data.booking_time.substring(0, 5) + " HRS";
+                document.getElementById('res-package').innerText = data.package;
 
-                if (data) {
-                    document.getElementById('res-name').innerText = data.customer_name;
-                    document.getElementById('res-date').innerText = data.booking_date;
-                    document.getElementById('res-time').innerText = data.booking_time.substring(0, 5) + " HRS";
-                    document.getElementById('res-package').innerText = data.package;
-
-                    if (data.status === 'completed') {
-                        renderState('ALREADY USED', 'PREVIOUSLY SCANNED', 'warning');
-                    } else if (data.status === 'paid') {
-                        renderState('AUTHORIZED', 'PAYMENT CONFIRMED', 'success');
-                        document.getElementById('action-zone').classList.remove('hidden');
-                    } else {
-                        renderState('NOT PAID', 'AWAITING PAYMENT', 'error');
-                    }
+                if (data.status === 'completed') {
+                    renderState('تم الاستخدام مسبقاً', 'ALREADY SCANNED', 'warning');
+                } else if (data.status === 'paid') {
+                    renderState('حجز صالح ومدفوع', 'AUTHORIZED_READY', 'success');
+                    document.getElementById('action-zone').classList.remove('hidden');
                 } else {
-                    renderState('NOT FOUND', 'INVALID FRAGMENT', 'error');
+                    renderState('بانتظار الدفع', 'NOT_YET_PAID', 'error');
                 }
-            }, 800);
+            } else {
+                renderState('غير موجود', 'NOT_FOUND', 'error');
+            }
         }
 
         function renderState(title, subtitle, state) {
-            const card = document.getElementById('main-card');
             const iconCont = document.getElementById('icon-container');
             const icon = document.getElementById('status-icon');
             const titleEl = document.getElementById('status-title');
@@ -194,37 +155,26 @@
             subTitleEl.innerText = subtitle;
 
             if (state === 'success') {
-                card.classList.add('status-glow-green');
-                iconCont.className = "w-32 h-32 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-2xl relative bg-green-500";
-                icon.innerText = "verified_user";
-                titleEl.classList.add('text-green-500');
+                iconCont.className = "w-32 h-32 rounded-full flex items-center justify-center mx-auto shadow-2xl bg-green-500 shadow-green-200";
+                icon.innerText = "check";
             } else if (state === 'warning') {
-                card.classList.add('status-glow-amber');
-                iconCont.className = "w-32 h-32 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-2xl relative bg-amber-500";
+                iconCont.className = "w-32 h-32 rounded-full flex items-center justify-center mx-auto shadow-2xl bg-amber-500 shadow-amber-200";
                 icon.innerText = "history";
-                titleEl.classList.add('text-amber-500');
             } else {
-                card.classList.add('status-glow-red');
-                iconCont.className = "w-32 h-32 rounded-[2.5rem] flex items-center justify-center mx-auto shadow-2xl relative bg-red-500";
-                icon.innerText = "report";
-                titleEl.classList.add('text-red-500');
+                iconCont.className = "w-32 h-32 rounded-full flex items-center justify-center mx-auto shadow-2xl bg-red-500 shadow-red-200";
+                icon.innerText = "close";
             }
         }
 
         async function approveBooking() {
-            const btn = document.getElementById('approve-btn');
-            btn.disabled = true;
-            btn.innerHTML = '<span class="material-icons animate-spin">sync</span>';
-
             const { error } = await supabaseClient
                 .from('bookings')
                 .update({ status: 'completed' })
                 .eq('qr_code_id', bookingId);
 
             if (!error) {
-                renderState('COMPLETED', 'LOGGED SUCCESSFULLY', 'success');
-                btn.parentElement.classList.add('hidden');
-                setTimeout(() => window.location.reload(), 2000);
+                alert('تم تسجيل الدخول بنجاح!');
+                window.location.reload();
             }
         }
 
