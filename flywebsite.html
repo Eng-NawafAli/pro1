@@ -510,12 +510,23 @@
                                 <span id="btnIcon" class="material-icons text-xl">send</span>
                             </button>
 
-                            <a href="https://wa.me/966550066463"
-                                class="w-full bg-[#25D366] text-white py-4 rounded-2xl font-bold text-center flex items-center justify-center gap-3 hover:opacity-90 transition-opacity">
-                                <span class="material-symbols-outlined">chat</span>
-                                تواصل مباشر واتساب
+                            <span class="material-symbols-outlined">chat</span>
+                            تواصل مباشر واتساب
                             </a>
                         </form>
+
+                        <!-- Moyasar Payment Form Container (Hidden by default) -->
+                        <div id="paymentContainer"
+                            class="hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div class="mb-6 text-center">
+                                <h3 class="text-xl font-bold text-primary mb-2">إتمام عملية الدفع</h3>
+                                <p class="text-xs text-slate-500">يرجى اختيار طريقة الدفع المناسبة لك</p>
+                            </div>
+                            <div class="mysr-form"></div>
+                            <button onclick="cancelPayment()"
+                                class="w-full mt-4 text-slate-400 text-xs font-bold hover:text-red-500 transition-colors">إلغاء
+                                العملية والعودة</button>
+                        </div>
                     </div>
                 </div>
             </div>
