@@ -1,0 +1,20 @@
+--- a/success.html
++++ b/success.html
+@@ -186,11 +186,13 @@
+             try {
+                 // Try to update status to paid
+                 console.log("Attempting to update status to paid for qrId:", qrId);
++                // Build update object — only use columns that exist in schema
++                const updateData = { status: 'paid' };
++                if (moyasarId) updateData.payment_id = moyasarId;
++
+                 const { error: updateError } = await supabaseClient
+                     .from('bookings')
+-                    .update({
+-                        status: 'paid',
+-                        metadata: moyasarId ? { moyasar_payment_id: moyasarId } : {}
+-                    })
++                    .update(updateData)
+                     .eq('qr_code_id', qrId);
+ 
+                 if (updateError) {
