@@ -70,11 +70,20 @@
             transition: all 0.3s ease;
             width: 100%;
             text-align: right;
+
+            /* iOS Safari specific fixes */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-font-smoothing: antialiased;
         }
 
         .premium-input:focus {
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
             border-color: var(--primary) !important;
+            outline: none;
+            /* Remove iOS blue outline */
         }
 
         @media (max-width: 640px) {
