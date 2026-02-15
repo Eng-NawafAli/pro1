@@ -374,6 +374,9 @@
                     </td>
                     <td data-label="التحكم" class="text-left">
                         <div class="flex items-center gap-3 justify-end">
+                            ${booking.status === 'pending' ? `
+                            <button onclick="manualConfirm('${booking.qr_code_id}')" class="bg-emerald-500 text-white px-4 py-2 rounded-xl text-[9px] font-black hover:bg-emerald-600 transition-all">تحويل لمدفوع</button>
+                            ` : ''}
                             <button onclick="copyMsg('${booking.customer_name}', '${booking.booking_date}', '${cleanTime}', '${booking.qr_code_id}')" 
                                 class="bg-indigo-600 text-white px-8 py-3.5 rounded-2xl text-[10px] font-black shadow-lg shadow-indigo-100 hover:bg-black transition-all btn-action uppercase tracking-widest">
                                 إرسال الرمز
@@ -386,6 +389,17 @@
                 `;
                 listContainer.appendChild(tr);
             });
+        }
+
+        async function manualConfirm(qrId) {
+            if (!confirm("هل أنت متأكد من تحويل هذا الحجز إلى 'مدفوع' يدوياً؟")) return;
+            const { error } = await supabaseClient.from('bookings').update({ status: 'paid' }).eq('qr_code_id', qrId);
+            if (!error) {
+                showToast("تم التحويل بنجاح ✅");
+                loadBookings();
+            } else {
+                alert("خطأ: " + error.message);
+            }
         }
 
         function updateStats(bookings) {

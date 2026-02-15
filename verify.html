@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>تحقق من التصريح | نادي الحريضة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -25,7 +25,7 @@
         }
 
         .premium-card {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
             border-radius: 3rem;
             box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.05);
@@ -36,18 +36,6 @@
             .premium-card {
                 border-radius: 2rem;
                 padding: 2.5rem 1.5rem !important;
-            }
-        }
-
-        @keyframes slide-up {
-            from {
-                transform: translateY(50px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
             }
         }
     </style>
@@ -64,8 +52,8 @@
         </div>
 
         <div class="space-y-4">
-            <h2 id="status-title" class="text-3xl font-black text-slate-900 tracking-tight leading-none uppercase">
-                التحقق الجاري</h2>
+            <h2 id="status-title" class="text-3xl font-black text-slate-900 tracking-tight leading-none uppercase">جاري
+                التحقق</h2>
             <p id="status-subtitle" class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Live Flight
                 Clearance System</p>
         </div>
@@ -90,7 +78,7 @@
             </div>
         </div>
 
-        <!-- Action Zone -->
+        <!-- Action Zone (Authenticated Admins Only) -->
         <div id="action-zone" class="hidden">
             <button onclick="approveBooking()" id="approve-btn"
                 class="w-full bg-slate-900 hover:bg-black text-white py-6 rounded-3xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-indigo-100 transition-all active:scale-95 flex items-center justify-center gap-3">
@@ -99,11 +87,16 @@
             </button>
         </div>
 
-        <!-- Login Redirect Zone -->
-        <div id="login-zone" class="hidden">
+        <!-- Login Zone (Visible to unauthenticated staff) -->
+        <div id="login-zone" class="hidden space-y-6">
+            <div class="p-4 bg-indigo-50 rounded-2xl border border-indigo-100">
+                <p class="text-[11px] font-bold text-indigo-600 leading-relaxed">
+                    يجب تسجيل الدخول كمسؤول لاعتماد هذه الرحلة وتفعيل الزر
+                </p>
+            </div>
             <a href="admin.html"
-                class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-6 rounded-3xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-indigo-100 transition-all active:scale-95 flex items-center justify-center gap-3">
-                <span>تسجيل الدخول للمسؤول</span>
+                class="group block w-full bg-indigo-600 hover:bg-slate-900 text-white py-6 rounded-3xl font-black text-xs uppercase tracking-widest shadow-2xl transition-all flex items-center justify-center gap-3">
+                <span>دخول المسؤول</span>
                 <span class="material-icons text-sm">login</span>
             </a>
         </div>
@@ -149,12 +142,14 @@
                     renderState('حجز مؤكد', 'CLEARANCE_AUTHORIZED', 'success');
                     if (session) {
                         document.getElementById('action-zone').classList.remove('hidden');
+                        document.getElementById('login-zone').classList.add('hidden');
                     } else {
-                        document.getElementById('status-subtitle').innerText = "يرجى تسجيل الدخول كمسؤول للتفعيل";
+                        document.getElementById('status-subtitle').innerText = "بانتظار تصريح المسؤول";
                         document.getElementById('login-zone').classList.remove('hidden');
                     }
                 } else {
                     renderState('انتظار الدفع', 'NOT_YET_CLEARED', 'error');
+                    if (!session) document.getElementById('login-zone').classList.remove('hidden');
                 }
             } else {
                 renderState('غير موجود', 'UNIDENTIFIED_OBJECT', 'error');
@@ -195,7 +190,6 @@
             if (!error) {
                 renderState('تم التفعيل بنجاح', 'FLIGHT MISSION LOGGED', 'success');
                 document.getElementById('action-zone').classList.add('hidden');
-                document.getElementById('error-zone').classList.remove('hidden');
             } else {
                 alert('خطأ في الاعتماد: ' + error.message);
                 btn.disabled = false;

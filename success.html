@@ -25,18 +25,11 @@
         }
 
         .premium-card {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(20px);
             border-radius: 3rem;
             box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.5);
-        }
-
-        @media (max-width: 640px) {
-            .premium-card {
-                border-radius: 2.5rem;
-                padding: 2.5rem 1.5rem !important;
-            }
         }
 
         .animate-check {
@@ -92,12 +85,12 @@
                 </div>
             </div>
             <div class="space-y-2">
-                <h1 class="text-3xl font-black text-slate-900 italic uppercase">PROCESSING</h1>
-                <p class="text-slate-500 font-bold text-sm tracking-widest">جاري تأكيد عملية الدفع وتحديث السجلات...</p>
+                <h1 class="text-3xl font-black text-slate-900 italic uppercase">CONFIRMING</h1>
+                <p class="text-slate-500 font-bold text-sm tracking-widest">جاري تثبيت عملية الدفع في النظام...</p>
             </div>
         </div>
 
-        <!-- Success UI (Hidden by default) -->
+        <!-- Success UI -->
         <div id="success-state" class="hidden space-y-12">
             <div class="relative w-32 h-32 mx-auto">
                 <div class="absolute inset-0 bg-green-500/10 rounded-full animate-ping"></div>
@@ -108,19 +101,19 @@
             </div>
 
             <div class="space-y-4">
-                <h1 class="text-4xl font-black text-slate-900">تم النجاح!</h1>
+                <h1 class="text-4xl font-black text-slate-900 leading-tight">تم الدفع بنجاح!</h1>
                 <p class="text-slate-500 text-lg font-medium leading-relaxed">
-                    تم تأكيد دفعك بنجاح. سيقوم الفريق المختص بمراجعة حجزك الآن وإرسال رمز الدخول عبر الواتساب.
+                    تم تأكيد حجزك وتحديث حالتك إلى "مدفوع". ستصلك رسالة التأكيد عبر الواتساب قريباً.
                 </p>
             </div>
 
             <div
-                class="bg-slate-50 p-6 rounded-[2.5rem] border border-slate-100 flex justify-between items-center text-right">
+                class="bg-emerald-50 p-6 rounded-[2.5rem] border border-emerald-100 flex justify-between items-center text-right">
                 <div>
-                    <p class="text-[10px] uppercase font-black text-slate-400">الحالة في النظام</p>
-                    <p class="text-green-600 font-black text-lg">مدفوع ومؤكد ✅</p>
+                    <p class="text-[10px] uppercase font-black text-emerald-400">حالة الحجز</p>
+                    <p class="text-emerald-600 font-black text-lg italic">PAID & VERIFIED ✅</p>
                 </div>
-                <div class="material-icons text-slate-200 text-4xl">verified</div>
+                <div class="material-icons text-emerald-200 text-4xl">verified</div>
             </div>
 
             <a href="flywebsite.html"
@@ -131,26 +124,23 @@
             </a>
         </div>
 
-        <!-- Error UI (Hidden by default) -->
+        <!-- Error UI -->
         <div id="error-state" class="hidden space-y-8">
             <div class="w-20 h-20 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto">
                 <span class="material-icons text-4xl">report_problem</span>
             </div>
             <div class="space-y-2">
-                <h2 class="text-2xl font-black text-red-600">تنبيه بسيط</h2>
-                <p id="error-msg" class="text-slate-500 text-sm font-bold">لم نتمكن من تلقائي تحديث الحالة، لكن لا تقلق!
-                </p>
+                <h2 class="text-2xl font-black text-red-600 uppercase">UPDATE FAILED</h2>
+                <p id="error-msg" class="text-slate-500 text-sm font-bold">حدث خطأ أثناء تحديث الحالة تلقائياً.</p>
             </div>
-            <div
-                class="p-6 bg-amber-50 rounded-2xl border border-amber-100 italic text-[11px] text-amber-700 font-bold">
-                "يرجى تصوير هذه الشاشة ومشاركتها مع الموظف عند الوصول."
-            </div>
+            <button onclick="process()" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-xs">إعادة
+                المحاولة</button>
             <a href="flywebsite.html"
-                class="block text-slate-400 font-bold text-xs uppercase tracking-widest hover:text-slate-900">العودة
-                للموقع</a>
+                class="block text-slate-400 font-bold text-xs uppercase tracking-widest hover:text-slate-900 mt-4">تخطي
+                والعودة للموقع</a>
         </div>
 
-        <p class="text-xs font-black text-slate-300 uppercase italic tracking-widest">Al-Haridha Aviation Club</p>
+        <p class="text-[10px] font-black text-slate-300 uppercase italic tracking-[0.3em]">Haridha Mission Control</p>
     </div>
 
     <script>
@@ -163,33 +153,41 @@
         const status = urlParams.get('status');
 
         async function process() {
-            // Wait a small bit to ensure DB is ready and give user visual feedback
-            await new Promise(r => setTimeout(r, 1500));
+            showState('loading');
+
+            // Wait slightly for DB consistency
+            await new Promise(r => setTimeout(r, 2000));
 
             if (qrId && status === 'paid') {
-                const { error } = await supabaseClient
-                    .from('bookings')
-                    .update({ status: 'paid' })
-                    .eq('qr_code_id', qrId);
+                try {
+                    // Try to update status to paid
+                    const { error: updateError } = await supabaseClient
+                        .from('bookings')
+                        .update({ status: 'paid' })
+                        .eq('qr_code_id', qrId);
 
-                if (error) {
-                    console.error("DB Error:", error);
-                    showState('error', 'نواجه مشكلة في الاتصال بقاعدة البيانات.');
-                } else {
-                    showState('success');
+                    if (updateError) throw updateError;
+
+                    // Double check if it actually updated
+                    const { data: checkData, error: checkError } = await supabaseClient
+                        .from('bookings')
+                        .select('status')
+                        .eq('qr_code_id', qrId)
+                        .single();
+
+                    if (checkData && checkData.status === 'paid') {
+                        showState('success');
+                    } else {
+                        throw new Error("تأكيد الحالة فشل");
+                    }
+                } catch (e) {
+                    console.error("Process error:", e);
+                    showState('error', 'تعذر تحديث الدفع. يرجى إعادة المحاولة.');
                 }
             } else if (status === 'failed') {
-                showState('error', 'تم الغاء العملية أو فشل الدفع.');
+                showState('error', 'تم إلغاء العملية أو فشل الدفع.');
             } else {
-                // If we reach here without proper params, try to check if it's already paid
-                if (qrId) {
-                    const { data } = await supabaseClient.from('bookings').select('status').eq('qr_code_id', qrId).single();
-                    if (data && data.status === 'paid') {
-                        showState('success');
-                        return;
-                    }
-                }
-                showState('error', 'تعذر التحقق من بيانات العملية.');
+                showState('error', 'بيانات الدفع غير مكتملة.');
             }
         }
 
@@ -198,7 +196,9 @@
             document.getElementById('success-state').classList.add('hidden');
             document.getElementById('error-state').classList.add('hidden');
 
-            if (state === 'success') {
+            if (state === 'loading') {
+                document.getElementById('loading-state').classList.remove('hidden');
+            } else if (state === 'success') {
                 document.getElementById('success-state').classList.remove('hidden');
             } else {
                 document.getElementById('error-state').classList.remove('hidden');

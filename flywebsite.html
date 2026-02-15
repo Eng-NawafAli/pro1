@@ -863,14 +863,15 @@
                 document.getElementById('bookingForm').classList.add('hidden');
                 document.getElementById('paymentContainer').classList.remove('hidden');
 
-                const callbackUrl = window.location.href.substring(0, window.location.href.lastIndexOf("/")) + "/success.html?qr=" + booking.qr_code_id;
+                const baseUrl = window.location.href.split('flywebsite.html')[0];
+                const callbackUrl = `${baseUrl}success.html?qr=${booking.qr_code_id}&status=paid`;
 
                 Moyasar.init({
-                    element: '.mysr-form',
-                    amount: amount,
+                    element: '.mys-payment-form',
+                    amount: amount * 100,
                     currency: 'SAR',
-                    description: `Flight Booking for ${customer_name}`,
-                    publishable_api_key: MOYASAR_KEY,
+                    description: `حجز رحلة ${package_type} - ${customer_name}`,
+                    publishable_api_key: 'pk_live_xxxx', // User should replace with real key
                     callback_url: callbackUrl,
                     methods: ['creditcard', 'applepay', 'stcpay'],
                     apple_pay: {
