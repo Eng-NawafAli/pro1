@@ -100,9 +100,15 @@
         }
 
         function copyMsg(name, date, time, qr) {
-            const msg = `مرحباً ${name}!\nشكراً لحجزك في نادي الحريضة للطيران.\nموعدك هو يوم ${date} الساعة ${time}.\nيرجى إبراز هذا الرمز عند الوصول:\nhttps://alharidha.com/verify.html?id=${qr}`;
+            const domain = window.location.origin;
+            const verifyLink = `${domain}/verify.html?id=${qr}`;
+            // Use QuickCharts for a real QR code image
+            const qrImageUrl = `https://quickchart.io/qr?text=${encodeURIComponent(verifyLink)}&size=300`;
+
+            const msg = `مرحباً ${name}!\nشكراً لحجزك في نادي الحريضة للطيران.\nموعدك هو يوم ${date} الساعة ${time}.\n\nيرجى إبراز هذا الرمز عند الوصول:\n${verifyLink}\n\nصورة الرمز (QR):\n${qrImageUrl}`;
+
             navigator.clipboard.writeText(msg);
-            alert('تم نسخ الرسالة! أرسلها للعميل في واتساب.');
+            alert('تم نسخ الرسالة! تشمل الآن رابط التحقق وصورة الرمز.\nأرسلها للعميل في واتساب.');
         }
 
         async function logout() {
