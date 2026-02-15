@@ -192,9 +192,17 @@
                     // Stop camera
                     video.srcObject.getTracks().forEach(track => track.stop());
 
-                    // Redirect to verify page
+                    // Extract QR ID from URL if scanned data is a full URL
+                    let qrId = code.data;
+                    if (code.data.includes('?qr=')) {
+                        // Extract ID from URL like: https://...verify.html?qr=XXXXX
+                        const urlParams = new URLSearchParams(code.data.split('?')[1]);
+                        qrId = urlParams.get('qr');
+                    }
+
+                    // Redirect to verify page with just the ID
                     setTimeout(() => {
-                        window.location.href = `verify.html?qr=${code.data}`;
+                        window.location.href = `verify.html?qr=${qrId}`;
                     }, 800);
                     return;
                 }
