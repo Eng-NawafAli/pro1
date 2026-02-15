@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>مركز القيادة | نادي الحريضة</title>
+    <title>مركز العمليات | نادي الحريضة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link
@@ -14,62 +14,49 @@
     <style>
         :root {
             --primary: #6366f1;
-            --primary-light: #818cf8;
             --bg-body: #f8fafc;
-            --dark-surface: #1e293b;
+            --card-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.04);
         }
 
         body {
             font-family: 'Noto Sans Arabic', 'Outfit', sans-serif;
             background-color: var(--bg-body);
-            color: #334155;
-            transition: background 0.5s ease;
+            color: #1e293b;
         }
 
-        .admin-dark {
-            background-color: #0f172a;
-            color: #f8fafc;
-        }
-
-        .glass-card {
+        .premium-card {
             background: white;
             border-radius: 2.5rem;
-            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(0, 0, 0, 0.03);
-        }
-
-        .dark .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: var(--card-shadow);
+            border: 1px solid rgba(0, 0, 0, 0.02);
         }
 
         .status-pill {
-            padding: 6px 12px;
-            border-radius: 12px;
-            font-weight: 900;
+            padding: 6px 14px;
+            border-radius: 14px;
+            font-weight: 800;
             font-size: 10px;
             letter-spacing: 0.5px;
+            text-transform: uppercase;
         }
 
         .paid {
-            background: #dcfce7;
-            color: #166534;
+            background: #ecfdf5;
+            color: #059669;
         }
 
         .pending {
-            background: #fef3c7;
-            color: #92400e;
+            background: #fffbeb;
+            color: #d97706;
         }
 
         .completed {
-            background: #e0e7ff;
-            color: #3730a3;
+            background: #eef2ff;
+            color: #4f46e5;
         }
 
         .toast-popup {
-            animation: slide-up 0.5s ease forwards;
+            animation: slide-up 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
         @keyframes slide-up {
@@ -85,14 +72,31 @@
         }
 
         .modal-overlay {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(8px);
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(10px);
+        }
+
+        /* Readable Improvements */
+        .readable-table th {
+            padding: 1.5rem 2rem;
+            font-weight: 900;
+            color: #64748b;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.1em;
+        }
+
+        .readable-table td {
+            padding: 1.5rem 2rem;
+        }
+
+        .btn-action {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
     </style>
 </head>
 
-<body class="min-h-screen transition-colors duration-500">
-    <!-- Notifications -->
+<body class="min-h-screen">
     <div id="toast-container" class="fixed bottom-10 left-10 z-[100] flex flex-col gap-3"></div>
 
     <audio id="notification-sound" preload="auto">
@@ -101,32 +105,33 @@
 
     <!-- Login Container -->
     <div id="login-container" class="flex items-center justify-center min-h-screen p-6 bg-slate-50">
-        <div class="glass-card p-12 w-full max-w-md space-y-10 animate-in fade-in zoom-in duration-700">
-            <div class="text-center space-y-3">
+        <div class="premium-card p-12 w-full max-w-md space-y-10 animate-in fade-in zoom-in duration-700">
+            <div class="text-center space-y-4">
                 <div
-                    class="w-20 h-20 bg-indigo-600 rounded-3xl flex items-center justify-center mx-auto shadow-2xl shadow-indigo-200">
-                    <span class="material-icons text-white text-4xl">admin_panel_settings</span>
+                    class="w-20 h-20 bg-indigo-600 rounded-[2rem] flex items-center justify-center mx-auto shadow-2xl shadow-indigo-100">
+                    <span class="material-icons text-white text-4xl">security</span>
                 </div>
-                <h1 class="text-3xl font-black text-slate-900">نظام الإدارة</h1>
-                <p class="text-slate-400 font-bold uppercase text-[10px] tracking-widest">Al-Haridha Aviation HQ</p>
+                <h1 class="text-3xl font-black text-slate-900 tracking-tight">الدخول للنظام</h1>
+                <p class="text-slate-400 font-bold uppercase text-[9px] tracking-[0.3em]">Operational Access Restricted
+                </p>
             </div>
 
             <form id="login-form" class="space-y-6">
                 <div class="space-y-2">
-                    <label class="text-xs font-bold text-slate-500 mr-2">البريد الإلكتروني</label>
+                    <label class="text-[10px] font-black text-slate-400 uppercase mr-2.5">المعرف الإلكتروني</label>
                     <input type="email" id="email"
-                        class="w-full bg-slate-100 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-indigo-500 transition-all"
+                        class="w-full bg-slate-100 border-none rounded-2xl py-5 px-7 focus:ring-2 focus:ring-indigo-500 transition-all font-bold"
                         required />
                 </div>
                 <div class="space-y-2">
-                    <label class="text-xs font-bold text-slate-500 mr-2">كلمة المرور</label>
+                    <label class="text-[10px] font-black text-slate-400 uppercase mr-2.5">كلمة السر</label>
                     <input type="password" id="password"
-                        class="w-full bg-slate-100 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-indigo-500 transition-all"
+                        class="w-full bg-slate-100 border-none rounded-2xl py-5 px-7 focus:ring-2 focus:ring-indigo-500 transition-all font-bold"
                         required />
                 </div>
                 <button type="submit" id="login-btn"
-                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-5 rounded-2xl font-black text-sm shadow-xl shadow-indigo-100 transition-all active:scale-95">
-                    تسجيل الدخول
+                    class="w-full bg-slate-900 hover:bg-black text-white py-6 rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl transition-all active:scale-95">
+                    إثبات الهوية والتحرك
                 </button>
             </form>
         </div>
@@ -134,64 +139,64 @@
 
     <!-- Dashboard Container -->
     <div id="dashboard-container" class="hidden min-h-screen p-6 md:p-12 space-y-12 max-w-7xl mx-auto">
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
             <div class="flex items-center gap-6">
                 <div
-                    class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-sm border border-slate-100">
-                    <span class="material-icons text-indigo-600 text-3xl">flight</span>
+                    class="w-16 h-16 bg-white rounded-3xl flex items-center justify-center shadow-sm border border-slate-100">
+                    <span class="material-icons text-indigo-600 text-3xl">hub</span>
                 </div>
                 <div>
-                    <h1 class="text-3xl font-black text-slate-900 mb-1">لوحة التحكم</h1>
-                    <div class="flex items-center gap-3">
+                    <h1 class="text-3xl font-black text-slate-900 tracking-tight mb-1">مركز القيادة</h1>
+                    <p class="text-[10px] font-black text-indigo-500 uppercase tracking-widest flex items-center gap-2">
                         <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Live System Active
-                        </p>
-                    </div>
+                        نظام البث المباشر مفعل
+                    </p>
                 </div>
             </div>
-            <div class="flex items-center gap-3">
-                <button onclick="logout()"
-                    class="bg-white px-6 py-4 rounded-2xl text-xs font-bold text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all flex items-center gap-3 shadow-sm border border-slate-100">
-                    <span class="material-icons text-sm">logout</span>
-                    خروج من النظام
-                </button>
-            </div>
+
+            <button onclick="logout()"
+                class="px-8 py-4 bg-white hover:bg-red-50 text-slate-400 hover:text-red-500 rounded-2xl font-black text-[10px] uppercase tracking-widest border border-slate-50 transition-all flex items-center gap-3">
+                <span class="material-icons text-sm">power_settings_new</span>
+                تسجيل الخروج
+            </button>
         </header>
 
         <!-- Stats Grid -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div class="glass-card p-8 space-y-2">
+            <div class="premium-card p-10 space-y-3">
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">إجمالي الحجوزات</p>
-                <h2 id="stat-total" class="text-4xl font-black text-slate-900">--</h2>
+                <h2 id="stat-total" class="text-5xl font-black text-slate-900 tracking-tighter">--</h2>
             </div>
-            <div class="glass-card p-8 space-y-2 border-l-4 border-green-500">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">حجوزات مدفوعة</p>
-                <h2 id="stat-paid" class="text-4xl font-black text-green-600">--</h2>
+            <div class="premium-card p-10 space-y-3 border-r-4 border-emerald-500">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">حجوزات مؤكدة</p>
+                <h2 id="stat-paid" class="text-5xl font-black text-emerald-600 tracking-tighter">--</h2>
             </div>
-            <div class="glass-card p-8 space-y-2 border-l-4 border-amber-500">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">بانتظار الدفع</p>
-                <h2 id="stat-pending" class="text-4xl font-black text-amber-600">--</h2>
+            <div class="premium-card p-10 space-y-3 border-r-4 border-amber-500">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">قيد الانتظار</p>
+                <h2 id="stat-pending" class="text-5xl font-black text-amber-600 tracking-tighter">--</h2>
             </div>
-            <div class="glass-card p-8 space-y-2 border-l-4 border-indigo-500">
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">الأرباح (SAR)</p>
-                <h2 id="stat-revenue" class="text-4xl font-black text-indigo-600">--</h2>
+            <div class="premium-card p-10 space-y-3 border-r-4 border-indigo-500">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">الأرباح التقديرية (SAR)</p>
+                <h2 id="stat-revenue" class="text-5xl font-black text-indigo-600 tracking-tighter">--</h2>
             </div>
         </div>
 
-        <!-- Bookings Table -->
-        <div class="glass-card overflow-hidden">
-            <div class="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
-                <h3 class="text-lg font-black text-slate-900 italic">سجلات الحجز المباشرة</h3>
+        <!-- Bookings Section -->
+        <div class="premium-card overflow-hidden">
+            <div class="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/20">
+                <h3 class="text-lg font-black text-slate-900 italic tracking-tight">سجل الرحلات والمنافسات</h3>
+                <span
+                    class="text-[9px] font-black text-slate-300 uppercase underline decoration-indigo-500 decoration-2 underline-offset-4">Last
+                    50 Missions</span>
             </div>
             <div class="overflow-x-auto">
-                <table class="w-full text-right border-collapse">
+                <table class="w-full text-right border-collapse readable-table">
                     <thead>
-                        <tr
-                            class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b border-slate-50">
-                            <th class="p-8">المعلومات</th>
-                            <th class="p-8 text-center">التوقيت</th>
-                            <th class="p-8 text-center">الحالة والرمز</th>
-                            <th class="p-8 text-left">الإجراءات</th>
+                        <tr class="bg-slate-50/50">
+                            <th>العميل والمعلومات</th>
+                            <th class="text-center">جدول الرحلة</th>
+                            <th class="text-center">الحالة / الكود</th>
+                            <th class="text-left">الإجراءات والتحكم</th>
                         </tr>
                     </thead>
                     <tbody id="bookings-list" class="divide-y divide-slate-50"></tbody>
@@ -200,22 +205,24 @@
         </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
+    <!-- Delete Modal -->
     <div id="delete-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-6 modal-overlay">
-        <div class="bg-white p-10 rounded-[3rem] w-full max-w-sm text-center space-y-8 animate-in zoom-in duration-300">
-            <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto">
-                <span class="material-icons text-3xl">delete_forever</span>
+        <div
+            class="bg-white p-12 rounded-[4rem] w-full max-w-sm text-center space-y-10 animate-in zoom-in duration-300">
+            <div class="w-20 h-20 bg-red-50 text-red-500 rounded-[2rem] flex items-center justify-center mx-auto">
+                <span class="material-icons text-4xl">delete_sweep</span>
             </div>
-            <div class="space-y-2">
-                <h3 class="text-xl font-bold text-slate-900">هل أنت متأكد؟</h3>
-                <p class="text-sm text-slate-500">سيتم حذف هذا السجل بشكل نهائي ولا يمكن استعادته.</p>
+            <div class="space-y-3">
+                <h3 class="text-2xl font-black text-slate-900 uppercase">حذف نهائي؟</h3>
+                <p class="text-sm font-bold text-slate-500 leading-relaxed">أنت على وشك حذف هذا السجل من خادم البيانات
+                    بشكل دائم. لا يمكن التراجع عن هذا الإجراء.</p>
             </div>
             <div class="flex gap-4">
                 <button onclick="closeDeleteModal()"
-                    class="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl font-bold">إلغاء</button>
+                    class="flex-1 py-5 bg-slate-100 text-slate-500 rounded-3xl font-black text-xs uppercase">تجاهل</button>
                 <button id="confirm-delete-btn"
-                    class="flex-1 py-4 bg-red-500 text-white rounded-2xl font-bold shadow-lg shadow-red-100">حذف
-                    السجل</button>
+                    class="flex-1 py-5 bg-red-500 text-white rounded-3xl font-black text-xs uppercase shadow-2xl shadow-red-200">تأكيد
+                    الحذف</button>
             </div>
         </div>
     </div>
@@ -251,9 +258,9 @@
             });
 
             if (error) {
-                alert("خطأ: " + error.message);
+                alert("للأسف، تعذر تسجيل الدخول: " + error.message);
                 btn.disabled = false;
-                btn.innerText = 'تسجيل الدخول';
+                btn.innerText = 'إثبات الهوية والتحرك';
             } else {
                 showDashboard();
             }
@@ -288,39 +295,39 @@
                 const cleanTime = booking.booking_time.substring(0, 5);
 
                 const tr = document.createElement('tr');
-                tr.className = "group hover:bg-slate-50/50 transition-colors";
+                tr.className = "group hover:bg-slate-50/80 transition-all duration-300";
                 tr.innerHTML = `
-                    <td class="p-8">
-                        <div class="font-bold text-slate-900 text-lg">${booking.customer_name}</div>
-                        <div class="flex gap-4 mt-2">
-                            <span class="text-xs font-bold text-slate-400">${booking.package}</span>
-                            <a href="https://wa.me/${booking.customer_phone.replace('0', '966')}" target="_blank" class="text-green-600 text-xs font-bold flex items-center gap-1">
-                                <span class="material-icons text-[12px]">phone</span> ${booking.customer_phone}
+                    <td>
+                        <div class="font-black text-slate-900 text-xl tracking-tight">${booking.customer_name}</div>
+                        <div class="flex gap-6 mt-3">
+                            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">${booking.package}</span>
+                            <a href="https://wa.me/${booking.customer_phone.replace(/^0/, '966')}" target="_blank" class="text-green-600 text-[10px] font-black flex items-center gap-1.5 hover:underline">
+                                <span class="material-icons text-sm">phone_iphone</span> ${booking.customer_phone}
                             </a>
                         </div>
                     </td>
-                    <td class="p-8 text-center">
-                        <div class="text-sm font-bold text-slate-600">${booking.booking_date}</div>
-                        <div class="text-[10px] text-slate-400 mt-1">${cleanTime} HRS</div>
+                    <td class="text-center">
+                        <div class="text-sm font-black text-slate-600">${booking.booking_date}</div>
+                        <div class="text-[9px] font-black text-slate-300 mt-1 uppercase tracking-widest underline decoration-indigo-200">${cleanTime} HRS SLOW</div>
                     </td>
-                    <td class="p-8">
-                        <div class="flex items-center justify-center gap-6">
-                            <a href="${qrImg}" target="_blank" class="block w-14 h-14 bg-white p-1 rounded-xl shadow-sm border border-slate-100 hover:scale-110 transition-transform">
-                                <img src="${qrImg}" class="w-full h-full rounded-lg">
+                    <td class="text-center">
+                        <div class="flex items-center justify-center gap-8">
+                            <a href="${qrImg}" target="_blank" class="block w-14 h-14 bg-white p-1 rounded-2xl shadow-sm border border-slate-100 group-hover:scale-125 transition-transform">
+                                <img src="${qrImg}" class="w-full h-full rounded-xl">
                             </a>
                             <span class="status-pill ${booking.status}">
-                                ${booking.status === 'paid' ? 'تم الدفع ✅' : (booking.status === 'completed' ? 'تم التنفيذ ✈️' : 'انتظار ⏳')}
+                                ${booking.status === 'paid' ? 'مؤكد ✅' : (booking.status === 'completed' ? 'منفذ ✈️' : 'انتظار ⏳')}
                             </span>
                         </div>
                     </td>
-                    <td class="p-8 text-left">
-                        <div class="flex items-center gap-2 justify-end">
+                    <td class="text-left">
+                        <div class="flex items-center gap-3 justify-end">
                             <button onclick="copyMsg('${booking.customer_name}', '${booking.booking_date}', '${cleanTime}', '${booking.qr_code_id}')" 
-                                class="bg-indigo-50 text-indigo-600 px-6 py-3 rounded-xl text-[10px] font-black hover:bg-indigo-600 hover:text-white transition-all">
-                                مشاركة الرمز
+                                class="bg-indigo-600 text-white px-8 py-3.5 rounded-2xl text-[10px] font-black shadow-lg shadow-indigo-100 hover:bg-black transition-all btn-action uppercase tracking-widest">
+                                إرسال الرمز
                             </button>
-                            <button onclick="openDeleteModal('${booking.id}')" class="w-10 h-10 flex items-center justify-center text-slate-300 hover:text-red-500 transition-colors">
-                                <span class="material-icons text-xl">delete_outline</span>
+                            <button onclick="openDeleteModal('${booking.id}')" class="w-12 h-12 flex items-center justify-center text-slate-200 hover:text-red-500 transition-colors btn-action">
+                                <span class="material-icons text-xl">delete</span>
                             </button>
                         </div>
                     </td>
@@ -338,17 +345,44 @@
         }
 
         function setupRealtime() {
-            supabaseClient.channel('db').on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, () => {
+            supabaseClient.channel('db-ops').on('postgres_changes', { event: '*', schema: 'public', table: 'bookings' }, (payload) => {
                 loadBookings();
+                if (payload.eventType === 'INSERT') showToast("مهمة جديدة: " + payload.new.customer_name);
+                if (payload.eventType === 'UPDATE' && payload.new.status === 'paid') {
+                    showToast("تم الدفع: " + payload.new.customer_name);
+                    playNotify();
+                }
             }).subscribe();
+        }
+
+        function playNotify() {
+            document.getElementById('notification-sound').play();
+        }
+
+        function showToast(msg) {
+            const cont = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = "toast-popup bg-slate-900 text-white p-5 rounded-2xl shadow-2xl flex items-center gap-4 text-xs font-black min-w-[300px]";
+            toast.innerHTML = `<span class="material-icons text-green-500">notifications_active</span> ${msg}`;
+            cont.appendChild(toast);
+            setTimeout(() => toast.remove(), 5000);
         }
 
         function copyMsg(name, date, time, qr) {
             const currentDir = window.location.href.substring(0, window.location.href.lastIndexOf("/"));
             const verifyLink = `${currentDir}/verify.html?qr=${qr}`;
-            const qrImg = `https://quickchart.io/qr?text=${encodeURIComponent(verifyLink)}&size=600`;
-            const msg = `مرحباً ${name}!\nتم تأكيد حجزك في نادي الحريضة للطيران ✈️\n\n🗓️ التاريخ: ${date}\n⏰ الوقت: ${time}\n\nيرجى فتح رابط الرمز الخاص بك وإظهاره عند الوصول:\n${qrImg}\n\nنتطلع لرؤيتك في سماء الحريضة!`;
-            navigator.clipboard.writeText(msg).then(() => alert("تم نسخ الرسالة بنجاح!"));
+            // Direct Link to high-res QR for WhatsApp Preview
+            const qrImg = `https://quickchart.io/qr?text=${encodeURIComponent(verifyLink)}&size=800`;
+
+            const msg = `مرحباً ${name}!\n\nيسرنا حجزك في نادي الحريضة للطيران ✈️\n\n📌 تفاصيل الرحلة:\n🗓️ التاريخ: ${date}\n⏰ الوقت: ${time}\n\nيرجى فتح رابط الرمز الخاص بك وإظهاره للموظف عند الوصول لتسجيل الدخول:\n${qrImg}\n\nنتطلع لرؤيتك في السماء! 🛫`;
+
+            navigator.clipboard.writeText(msg).then(() => {
+                const toast = document.createElement('div');
+                toast.className = "toast-popup bg-indigo-600 text-white p-5 rounded-2xl shadow-2xl flex items-center gap-4 text-xs font-black fixed bottom-10 right-10 z-[100]";
+                toast.innerHTML = `<span class="material-icons">content_copy</span> تم نسخ الرسالة باحترافية!`;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
+            });
         }
 
         function openDeleteModal(id) {
@@ -364,17 +398,17 @@
             if (!deleteId) return;
             const btn = document.getElementById('confirm-delete-btn');
             btn.disabled = true;
-            btn.innerText = 'جاري الحذف...';
+            btn.innerText = 'جاري المسح...';
 
             const { error } = await supabaseClient.from('bookings').delete().eq('id', deleteId);
             if (!error) {
                 closeDeleteModal();
                 loadBookings();
             } else {
-                alert("خطأ: " + error.message);
+                alert("خطأ تقني: " + error.message);
+                btn.disabled = false;
+                btn.innerText = 'تأكيد الحذف';
             }
-            btn.disabled = false;
-            btn.innerText = 'حذف السجل';
         });
 
         async function logout() {

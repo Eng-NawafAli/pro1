@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>التحقق من التصريح | نادي الحريضة</title>
+    <title>تحقق من التصريح | نادي الحريضة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link
@@ -14,7 +14,7 @@
     <style>
         :root {
             --primary: #6366f1;
-            --bg-body: #f1f5f9;
+            --bg-body: #f8fafc;
         }
 
         body {
@@ -24,17 +24,11 @@
             overflow: hidden;
         }
 
-        .verify-card {
+        .premium-card {
             background: white;
             border-radius: 4rem;
-            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(0, 0, 0, 0.03);
-        }
-
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: full;
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.02);
         }
 
         .animate-in {
@@ -57,52 +51,54 @@
 
 <body class="flex items-center justify-center min-h-screen p-6">
     <div id="main-card"
-        class="verify-card p-12 w-full max-w-md text-center space-y-12 animate-in relative overflow-hidden">
+        class="premium-card p-12 w-full max-w-md text-center space-y-12 animate-in relative overflow-hidden">
 
-        <!-- Status Icon Container -->
+        <!-- Status Icon -->
         <div id="icon-container"
-            class="w-32 h-32 rounded-full flex items-center justify-center mx-auto shadow-2xl transition-all duration-500">
-            <span id="status-icon" class="material-icons text-6xl text-white">sync</span>
+            class="w-32 h-32 rounded-full flex items-center justify-center mx-auto shadow-2xl transition-all duration-500 bg-slate-100">
+            <span id="status-icon" class="material-icons text-6xl text-slate-300">sync</span>
         </div>
 
         <div class="space-y-4">
-            <h2 id="status-title" class="text-3xl font-black text-slate-900 tracking-tight leading-none uppercase">جاري
-                التحقق</h2>
-            <p id="status-subtitle" class="text-xs font-bold text-slate-400 uppercase tracking-widest">Flight Manifest
-                Verification</p>
+            <h2 id="status-title" class="text-3xl font-black text-slate-900 tracking-tight leading-none uppercase">
+                التحقق الجاري</h2>
+            <p id="status-subtitle" class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Live Flight
+                Clearance System</p>
         </div>
 
         <!-- Detail Grid -->
-        <div class="bg-slate-50 rounded-[2.5rem] p-8 space-y-6 border border-slate-100 text-right">
-            <div class="flex justify-between items-center border-b border-slate-200 pb-4">
-                <span class="text-[10px] font-black text-slate-400 uppercase">اسم العميل</span>
-                <span id="res-name" class="text-sm font-black text-slate-900 italic">--</span>
+        <div class="bg-slate-50/50 rounded-[3rem] p-10 space-y-7 border border-slate-100 text-right">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-5">
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">اسم العميل</span>
+                <span id="res-name" class="text-md font-black text-slate-900 italic tracking-tight">--</span>
             </div>
-            <div class="flex justify-between items-center border-b border-slate-200 pb-4">
-                <span class="text-[10px] font-black text-slate-400 uppercase">جدول الرحلة</span>
-                <div class="text-left">
-                    <div id="res-date" class="text-xs font-black text-slate-900">--</div>
-                    <div id="res-time" class="text-[10px] font-bold text-slate-400 text-right uppercase">--</div>
+            <div class="flex justify-between items-center border-b border-slate-100 pb-5">
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">الموعد</span>
+                <div class="text-left font-black">
+                    <div id="res-date" class="text-xs text-slate-900">--</div>
+                    <div id="res-time" class="text-[9px] text-slate-400 uppercase tracking-widest mt-1">--</div>
                 </div>
             </div>
             <div class="flex justify-between items-center">
-                <span class="text-[10px] font-black text-slate-400 uppercase">الباقة المختارة</span>
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">الباقة</span>
                 <span id="res-package"
-                    class="px-4 py-1.5 bg-indigo-50 rounded-xl text-[10px] font-black text-indigo-600">--</span>
+                    class="px-5 py-2 bg-white rounded-xl text-[9px] font-black text-indigo-600 shadow-sm border border-slate-100 uppercase tracking-widest">--</span>
             </div>
         </div>
 
-        <!-- Action Button -->
+        <!-- Action Zone -->
         <div id="action-zone" class="hidden">
             <button onclick="approveBooking()" id="approve-btn"
-                class="w-full bg-slate-900 hover:bg-black text-white py-6 rounded-3xl font-black text-sm uppercase tracking-widest shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-3">
-                <span>اعتماد الصعود للطائرة</span>
+                class="w-full bg-slate-900 hover:bg-black text-white py-6 rounded-3xl font-black text-xs uppercase tracking-[0.2em] shadow-2xl shadow-indigo-100 transition-all active:scale-95 flex items-center justify-center gap-3">
+                <span>تأكيد الإقلاع</span>
                 <span class="material-icons text-sm">flight_takeoff</span>
             </button>
         </div>
 
         <div id="error-zone" class="hidden">
-            <button onclick="window.close()" class="w-full text-slate-400 font-bold text-sm">إغلاق النافذة</button>
+            <button onclick="window.close()"
+                class="w-full text-slate-300 font-black text-[10px] uppercase tracking-widest hover:text-slate-900">إنهاء
+                الجلسة</button>
         </div>
     </div>
 
@@ -116,11 +112,10 @@
 
         async function verify() {
             if (!bookingId) {
-                renderState('كود غير صالح', 'ERROR_TOKEN_INVALID', 'error');
+                renderState('كود غير صالح', 'ERROR_MANIFEST_VOID', 'error');
                 return;
             }
 
-            // Check if admin is logged in
             const { data: { session } } = await supabaseClient.auth.getSession();
 
             const { data, error } = await supabaseClient
@@ -136,21 +131,19 @@
                 document.getElementById('res-package').innerText = data.package;
 
                 if (data.status === 'completed') {
-                    renderState('تم الاستخدام مسبقاً', 'ALREADY SCANNED', 'warning');
+                    renderState('تم الاستخدام', 'MISSION_ALREADY_LOGGED', 'warning');
                 } else if (data.status === 'paid') {
-                    renderState('حجز صالح ومدفوع', 'AUTHORIZED_READY', 'success');
-
-                    // Only show button if ADMIN is logged in
+                    renderState('حجز مؤكد', 'CLEARANCE_AUTHORIZED', 'success');
                     if (session) {
                         document.getElementById('action-zone').classList.remove('hidden');
                     } else {
                         document.getElementById('status-subtitle').innerText = "يرجى تسجيل الدخول كمسؤول للتفعيل";
                     }
                 } else {
-                    renderState('بانتظار الدفع', 'NOT_YET_PAID', 'error');
+                    renderState('انتظار الدفع', 'NOT_YET_CLEARED', 'error');
                 }
             } else {
-                renderState('غير موجود', 'NOT_FOUND', 'error');
+                renderState('غير موجود', 'UNIDENTIFIED_OBJECT', 'error');
             }
         }
 
@@ -164,21 +157,21 @@
             subTitleEl.innerText = subtitle;
 
             if (state === 'success') {
-                iconCont.className = "w-32 h-32 rounded-full flex items-center justify-center mx-auto shadow-2xl bg-green-500 shadow-green-200";
-                icon.innerText = "check";
+                iconCont.className = "w-32 h-32 rounded-full flex items-center justify-center mx-auto shadow-2xl bg-emerald-500 shadow-emerald-200";
+                icon.innerText = "verified";
             } else if (state === 'warning') {
                 iconCont.className = "w-32 h-32 rounded-full flex items-center justify-center mx-auto shadow-2xl bg-amber-500 shadow-amber-200";
                 icon.innerText = "history";
             } else {
-                iconCont.className = "w-32 h-32 rounded-full flex items-center justify-center mx-auto shadow-2xl bg-red-500 shadow-red-200";
-                icon.innerText = "close";
+                iconCont.className = "w-32 h-32 rounded-full flex items-center justify-center mx-auto shadow-2xl bg-rose-500 shadow-rose-200";
+                icon.innerText = "gpp_bad";
             }
         }
 
         async function approveBooking() {
             const btn = document.getElementById('approve-btn');
             btn.disabled = true;
-            btn.innerHTML = '<span class="material-icons animate-spin">sync</span>';
+            btn.innerHTML = '<span class="material-icons animate-spin text-sm">sync</span>';
 
             const { error } = await supabaseClient
                 .from('bookings')
@@ -186,13 +179,13 @@
                 .eq('qr_code_id', bookingId);
 
             if (!error) {
-                renderState('تم الاعتماد بنجاح', 'FLIGHT LOGGED', 'success');
+                renderState('تم التفعيل بنجاح', 'FLIGHT MISSION LOGGED', 'success');
                 document.getElementById('action-zone').classList.add('hidden');
                 document.getElementById('error-zone').classList.remove('hidden');
             } else {
                 alert('خطأ في الاعتماد: ' + error.message);
                 btn.disabled = false;
-                btn.innerHTML = '<span>اعتماد الصعود للطائرة</span><span class="material-icons text-sm">flight_takeoff</span>';
+                btn.innerHTML = '<span>تأكيد الإقلاع</span><span class="material-icons text-sm">flight_takeoff</span>';
             }
         }
 

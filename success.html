@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>تم الحجز بنجاح | نادي الحريضة</title>
+    <title>تأكيد العملية | نادي الحريضة</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link
@@ -14,8 +14,7 @@
     <style>
         :root {
             --primary: #6366f1;
-            --secondary: #ec4899;
-            --bg-light: #f8fafc;
+            --bg-light: #f1f5f9;
         }
 
         body {
@@ -25,25 +24,22 @@
             overflow: hidden;
         }
 
-        .success-card {
+        .premium-card {
             background: white;
             border-radius: 4rem;
-            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(0, 0, 0, 0.03);
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.02);
+            transition: all 0.5s ease;
         }
 
         .animate-check {
-            animation: check-bounce 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation: check-pop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
-        @keyframes check-bounce {
+        @keyframes check-pop {
             0% {
                 transform: scale(0);
                 opacity: 0;
-            }
-
-            70% {
-                transform: scale(1.1);
             }
 
             100% {
@@ -52,57 +48,102 @@
             }
         }
 
-        .wave {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 100px;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%236366f1" fill-opacity="0.05" d="M0,192L48,197.3C96,203,192,213,288,192C384,171,480,117,576,112C672,107,768,149,864,181.3C960,213,1056,235,1152,213.3C1248,192,1344,128,1392,96L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
-            background-size: cover;
+        .loading-pulse {
+            animation: pulse-ring 1.5s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+
+            100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
         }
     </style>
 </head>
 
-<body class="flex items-center justify-center min-h-screen p-6 relative">
-    <div class="wave"></div>
+<body class="flex items-center justify-center min-h-screen p-6 relative bg-[#f8fafc]">
 
-    <div
-        class="success-card p-12 md:p-16 w-full max-w-lg text-center space-y-12 relative z-10 animate-in fade-in zoom-in duration-1000">
-        <!-- Modern Icon -->
-        <div class="relative w-32 h-32 mx-auto">
-            <div class="absolute inset-0 bg-green-500/10 rounded-full animate-ping"></div>
+    <div id="status-card"
+        class="premium-card p-12 md:p-16 w-full max-w-lg text-center space-y-12 animate-in fade-in zoom-in duration-1000">
+
+        <!-- Loading UI -->
+        <div id="loading-state" class="space-y-10">
+            <div class="relative w-24 h-24 mx-auto">
+                <div class="absolute inset-0 bg-indigo-500 rounded-full loading-pulse"></div>
+                <div
+                    class="relative w-24 h-24 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin">
+                </div>
+            </div>
+            <div class="space-y-2">
+                <h1 class="text-3xl font-black text-slate-900 italic uppercase">PROCESSING</h1>
+                <p class="text-slate-500 font-bold text-sm tracking-widest">جاري تأكيد عملية الدفع وتحديث السجلات...</p>
+            </div>
+        </div>
+
+        <!-- Success UI (Hidden by default) -->
+        <div id="success-state" class="hidden space-y-12">
+            <div class="relative w-32 h-32 mx-auto">
+                <div class="absolute inset-0 bg-green-500/10 rounded-full animate-ping"></div>
+                <div
+                    class="relative w-32 h-32 bg-green-500 rounded-full flex items-center justify-center shadow-2xl shadow-green-200 animate-check">
+                    <span class="material-icons text-white text-6xl">check</span>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <h1 class="text-4xl font-black text-slate-900">تم النجاح!</h1>
+                <p class="text-slate-500 text-lg font-medium leading-relaxed">
+                    تم تأكيد دفعك بنجاح. سيقوم الفريق المختص بمراجعة حجزك الآن وإرسال رمز الدخول عبر الواتساب.
+                </p>
+            </div>
+
             <div
-                class="relative w-32 h-32 bg-green-500 rounded-full flex items-center justify-center shadow-2xl shadow-green-200 animate-check">
-                <span class="material-icons text-white text-6xl">check</span>
+                class="bg-slate-50 p-6 rounded-[2.5rem] border border-slate-100 flex justify-between items-center text-right">
+                <div>
+                    <p class="text-[10px] uppercase font-black text-slate-400">الحالة في النظام</p>
+                    <p class="text-green-600 font-black text-lg">مدفوع ومؤكد ✅</p>
+                </div>
+                <div class="material-icons text-slate-200 text-4xl">verified</div>
             </div>
+
+            <a href="flywebsite.html"
+                class="group block w-full bg-slate-900 hover:bg-black text-white py-6 rounded-3xl font-black text-sm uppercase tracking-widest shadow-2xl transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3">
+                <span>العودة للرئيسية</span>
+                <span
+                    class="material-icons text-sm opacity-50 group-hover:translate-x-1 transition-transform">arrow_back</span>
+            </a>
         </div>
 
-        <div class="space-y-4">
-            <h1 class="text-4xl font-extrabold text-slate-900 tracking-tight">شكراً لك!</h1>
-            <p class="text-slate-500 text-lg font-medium leading-relaxed">
-                تمت عملية الحجز والدفع بنجاح. سنقوم بإرسال رمز الدخول الخاص بك عبر الواتساب قريباً.
-            </p>
+        <!-- Error UI (Hidden by default) -->
+        <div id="error-state" class="hidden space-y-8">
+            <div class="w-20 h-20 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto">
+                <span class="material-icons text-4xl">report_problem</span>
+            </div>
+            <div class="space-y-2">
+                <h2 class="text-2xl font-black text-red-600">تنبيه بسيط</h2>
+                <p id="error-msg" class="text-slate-500 text-sm font-bold">لم نتمكن من تلقائي تحديث الحالة، لكن لا تقلق!
+                </p>
+            </div>
+            <div
+                class="p-6 bg-amber-50 rounded-2xl border border-amber-100 italic text-[11px] text-amber-700 font-bold">
+                "يرجى تصوير هذه الشاشة ومشاركتها مع الموظف عند الوصول."
+            </div>
+            <a href="flywebsite.html"
+                class="block text-slate-400 font-bold text-xs uppercase tracking-widest hover:text-slate-900">العودة
+                للموقع</a>
         </div>
 
-        <div class="grid grid-cols-2 gap-4">
-            <div class="bg-slate-50 p-4 rounded-3xl border border-slate-100">
-                <p class="text-[10px] uppercase font-bold text-slate-400 mb-1">حالة الدفع</p>
-                <p class="text-green-600 font-bold">مكتملة بنجاح</p>
-            </div>
-            <div class="bg-slate-50 p-4 rounded-3xl border border-slate-100">
-                <p class="text-[10px] uppercase font-bold text-slate-400 mb-1">موعد الرحلة</p>
-                <p class="text-indigo-600 font-bold">قيد المراجعة</p>
-            </div>
-        </div>
-
-        <a href="flywebsite.html"
-            class="group block w-full bg-slate-900 hover:bg-black text-white py-6 rounded-3xl font-bold text-lg shadow-2xl shadow-slate-200 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-3">
-            <span>العودة للموقع</span>
-            <span class="material-icons opacity-50 group-hover:translate-x-1 transition-transform">arrow_back</span>
-        </a>
-
-        <p class="text-sm font-bold text-slate-400 italic">"نراك قريباً في سماء الحريضة!"</p>
+        <p class="text-xs font-black text-slate-300 uppercase italic tracking-widest">Al-Haridha Aviation Club</p>
     </div>
 
     <script>
@@ -114,15 +155,51 @@
         const qrId = urlParams.get('qr');
         const status = urlParams.get('status');
 
-        async function updateStatus() {
+        async function process() {
+            // Wait a small bit to ensure DB is ready and give user visual feedback
+            await new Promise(r => setTimeout(r, 1500));
+
             if (qrId && status === 'paid') {
-                await supabaseClient
+                const { error } = await supabaseClient
                     .from('bookings')
                     .update({ status: 'paid' })
                     .eq('qr_code_id', qrId);
+
+                if (error) {
+                    console.error("DB Error:", error);
+                    showState('error', 'نواجه مشكلة في الاتصال بقاعدة البيانات.');
+                } else {
+                    showState('success');
+                }
+            } else if (status === 'failed') {
+                showState('error', 'تم الغاء العملية أو فشل الدفع.');
+            } else {
+                // If we reach here without proper params, try to check if it's already paid
+                if (qrId) {
+                    const { data } = await supabaseClient.from('bookings').select('status').eq('qr_code_id', qrId).single();
+                    if (data && data.status === 'paid') {
+                        showState('success');
+                        return;
+                    }
+                }
+                showState('error', 'تعذر التحقق من بيانات العملية.');
             }
         }
-        updateStatus();
+
+        function showState(state, msg = '') {
+            document.getElementById('loading-state').classList.add('hidden');
+            document.getElementById('success-state').classList.add('hidden');
+            document.getElementById('error-state').classList.add('hidden');
+
+            if (state === 'success') {
+                document.getElementById('success-state').classList.remove('hidden');
+            } else {
+                document.getElementById('error-state').classList.remove('hidden');
+                if (msg) document.getElementById('error-msg').innerText = msg;
+            }
+        }
+
+        process();
     </script>
 </body>
 
