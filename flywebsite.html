@@ -49,6 +49,16 @@
             .nav-container {
                 padding: 1rem !important;
             }
+
+            .section-py {
+                padding-top: 4rem !important;
+                padding-bottom: 4rem !important;
+            }
+
+            .mobile-label-center {
+                text-align: center !important;
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -316,10 +326,10 @@
                     <span id="stat-wind" class="text-sm font-bold tracking-tight">-- كم/س</span>
                 </div>
                 <div class="h-8 w-px bg-white/10 hidden md:block"></div>
-                <div class="flex flex-col items-center text-center">
+                <div class="flex flex-col items-center text-center w-full md:w-auto">
                     <span class="text-slate-400 text-[9px] font-black uppercase tracking-[0.2em] mb-2">أوقات التحليق
                         اليوم</span>
-                    <div class="grid grid-cols-2 gap-3 text-[10px] font-bold text-ltr">
+                    <div class="grid grid-cols-2 gap-3 text-[10px] font-bold text-ltr w-full">
                         <div class="bg-primary/5 px-3 py-2 rounded-xl border border-primary/10">
                             <p class="text-primary text-[8px] mb-1">الصباحية</p>
                             <span>6:00 - 10:30 AM</span>
@@ -495,10 +505,10 @@
 
                             <div class="space-y-4">
                                 <label
-                                    class="text-sm font-bold text-slate-800 dark:text-white block px-2 tracking-tight">الوقت
+                                    class="text-sm font-bold text-slate-800 dark:text-white block px-2 tracking-tight mobile-label-center">الوقت
                                     المفضل</label>
                                 <select required name="الوقت" id="time_select"
-                                    class="w-full bg-slate-100 dark:bg-white/10 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-primary font-bold text-sm">
+                                    class="w-full bg-slate-100 dark:bg-white/10 border-none rounded-2xl py-4 px-6 focus:ring-2 focus:ring-primary font-bold text-sm text-center md:text-right">
                                     <option value="" disabled selected>اختر الوقت</option>
                                     <optgroup label="الفترة الصباحية">
                                         <option value="06:00">06:00 AM</option>

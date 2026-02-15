@@ -152,37 +152,78 @@
   <div class="h-1.5 w-full bg-gradient-to-r from-primary via-sunset-orange to-sunset-purple"></div>
   <header
     class="sticky top-0 z-50 w-full bg-white/70 dark:bg-background-dark/70 backdrop-blur-xl border-b border-primary/5">
-    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-      <div class="flex items-center gap-2 md:gap-3">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-2 md:gap-3 shrink-0">
         <div class="bg-primary p-2 rounded-lg shrink-0">
           <span class="material-symbols-outlined text-white">waves</span>
         </div>
         <h1 class="text-lg md:text-xl font-extrabold tracking-tight text-[#111818] dark:text-white truncate">واجهة
           الحريضة</h1>
       </div>
+
+      <!-- Desktop Nav -->
       <nav class="hidden lg:flex items-center gap-6 xl:gap-10">
         <a class="text-sm font-semibold hover:text-primary transition-colors" href="#">الرئيسية</a>
         <a class="text-sm font-semibold hover:text-primary transition-colors" href="#about">عن الحريضة</a>
         <a class="text-sm font-semibold hover:text-primary transition-colors" href="#events">الفعاليات</a>
         <a class="text-sm font-semibold hover:text-primary transition-colors" href="#faq">الأسئلة</a>
       </nav>
-      <!-- Unified Weather Widget (PC & Tablet) -->
-      <div id="weather-widget-mobile"
-        class="hidden md:flex items-center gap-2 bg-gradient-to-r from-primary/10 to-ocean-blue/10 backdrop-blur-sm px-4 py-2 rounded-xl border border-primary/20">
-        <span class="material-symbols-outlined text-primary text-xl" id="weather-icon-mobile">wb_sunny</span>
-        <div class="text-right">
-          <span class="text-sm font-bold" id="weather-temp-mobile">--</span>
-          <span class="text-xs opacity-70 font-bold">°C</span>
+
+      <div class="flex items-center gap-3">
+        <!-- Unified Weather Widget (PC & Tablet) -->
+        <div id="weather-widget-mobile"
+          class="hidden md:flex items-center gap-2 bg-gradient-to-r from-primary/10 to-ocean-blue/10 backdrop-blur-sm px-4 py-2 rounded-xl border border-primary/20">
+          <span class="material-symbols-outlined text-primary text-xl" id="weather-icon-mobile">wb_sunny</span>
+          <div class="text-right">
+            <span class="text-sm font-bold" id="weather-temp-mobile">--</span>
+            <span class="text-xs opacity-70 font-bold">°C</span>
+          </div>
         </div>
+
+        <a href="#location"
+          class="hidden sm:block bg-primary hover:bg-primary/90 text-[#111818] px-6 py-2.5 rounded-lg font-bold text-sm transition-all shadow-lg shadow-primary/20">
+          خطط لزيارتك
+        </a>
+
+        <!-- Mobile Menu Toggle -->
+        <button id="mobile-menu-toggle" class="lg:hidden p-2 text-[#111818] dark:text-white">
+          <span class="material-symbols-outlined text-3xl">menu</span>
+        </button>
       </div>
-      <!-- Complex widgets hidden for a cleaner look -->
-      <div id="weather-widget" class="hidden"></div>
-      <div id="prayer-widget" class="hidden"></div>
-      <!-- Desktop tide widget hidden to keep header clean like tablet -->
-      <a href="#location"
-        class="bg-primary hover:bg-primary/90 text-[#111818] px-6 py-2.5 rounded-lg font-bold text-sm transition-all shadow-lg shadow-primary/20">
-        خطط لزيارتك
-      </a>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="fixed inset-0 z-50 lg:hidden hidden">
+      <div class="absolute inset-0 bg-background-dark/60 backdrop-blur-lg" onclick="toggleMobileMenu()"></div>
+      <div
+        class="absolute top-0 right-0 w-3/4 h-full bg-white dark:bg-background-dark shadow-2xl p-8 transform translate-x-full transition-transform duration-300"
+        id="mobile-menu-content">
+        <div class="flex justify-between items-center mb-12">
+          <div class="flex items-center gap-2">
+            <div class="bg-primary p-2 rounded-lg">
+              <span class="material-symbols-outlined text-white">waves</span>
+            </div>
+            <span class="font-black text-lg dark:text-white">القائمة</span>
+          </div>
+          <button onclick="toggleMobileMenu()" class="p-2 dark:text-white">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <nav class="flex flex-col gap-6">
+          <a class="text-lg font-black hover:text-primary transition-colors dark:text-white border-b border-primary/5 pb-4"
+            href="#" onclick="toggleMobileMenu()">الرئيسية</a>
+          <a class="text-lg font-black hover:text-primary transition-colors dark:text-white border-b border-primary/5 pb-4"
+            href="#about" onclick="toggleMobileMenu()">عن الحريضة</a>
+          <a class="text-lg font-black hover:text-primary transition-colors dark:text-white border-b border-primary/5 pb-4"
+            href="#events" onclick="toggleMobileMenu()">الفعاليات</a>
+          <a class="text-lg font-black hover:text-primary transition-colors dark:text-white border-b border-primary/5 pb-4"
+            href="#gallery" onclick="toggleMobileMenu()">معرض الصور</a>
+          <a class="text-lg font-black hover:text-primary transition-colors dark:text-white border-b border-primary/5 pb-4"
+            href="#faq" onclick="toggleMobileMenu()">الأسئلة الشائعة</a>
+          <a class="text-lg font-black text-primary pt-4" href="flywebsite.html" onclick="toggleMobileMenu()">نادي
+            الطيران ✈️</a>
+        </nav>
+      </div>
     </div>
   </header>
   <main>
@@ -408,7 +449,7 @@
           <p class="text-slate-600 dark:text-slate-400">صُممت واجهة الحريضة لتلبي تطلعات الجميع، من الباحثين عن الهدوء
             إلى عشاق المغامرة والترفيه العائلي.</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           <div
             class="group p-8 bg-white dark:bg-background-dark rounded-xl border border-primary/10 hover:border-primary transition-all shadow-sm hover:shadow-primary/20 transition-all duration-300">
             <div
@@ -790,7 +831,7 @@
           <h3 class="text-4xl font-bold mb-4">خريطة المرافق</h3>
           <p class="text-slate-600 dark:text-slate-400">دليلك الشامل لجميع المرافق والخدمات المتوفرة في الواجهة</p>
         </div>
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
           <!-- Facility 1 -->
           <div
             class="group bg-white dark:bg-background-dark p-6 rounded-2xl border border-primary/10 hover:border-primary hover:shadow-lg hover:shadow-primary/10 transition-all cursor-pointer">
@@ -1541,6 +1582,23 @@
       modal.classList.remove('hidden');
       document.body.style.overflow = 'hidden';
     }
+
+    // Mobile Menu Toggle
+    window.toggleMobileMenu = function () {
+      const menu = document.getElementById('mobile-menu');
+      const content = document.getElementById('mobile-menu-content');
+      const isHidden = menu.classList.contains('hidden');
+
+      if (isHidden) {
+        menu.classList.remove('hidden');
+        setTimeout(() => content.classList.remove('translate-x-full'), 10);
+      } else {
+        content.classList.add('translate-x-full');
+        setTimeout(() => menu.classList.add('hidden'), 300);
+      }
+    };
+
+    document.getElementById('mobile-menu-toggle')?.addEventListener('click', toggleMobileMenu);
 
     function closeTerms() {
       const modal = document.getElementById('termsModal');
