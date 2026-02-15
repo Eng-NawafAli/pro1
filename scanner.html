@@ -3,10 +3,10 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>مسح رمز QR | نادي الحريضة</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&family=Noto+Sans+Arabic:wght@400;700;900&display=swap"
         rel="stylesheet" />
@@ -19,90 +19,188 @@
         body {
             font-family: 'Noto Sans Arabic', 'Outfit', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .scanner-container {
+        .scanner-box {
             background: white;
-            border-radius: 2rem;
-            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.3);
+            border-radius: 3rem;
+            box-shadow: 0 50px 120px -20px rgba(0, 0, 0, 0.4);
         }
 
-        #reader {
-            border-radius: 1.5rem;
-            overflow: hidden;
+        #video {
+            border-radius: 2rem;
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+        }
+
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #6366f1, transparent);
+            animation: scan 2s ease-in-out infinite;
+        }
+
+        @keyframes scan {
+
+            0%,
+            100% {
+                top: 0;
+            }
+
+            50% {
+                top: 100%;
+            }
+        }
+
+        .corner {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border: 4px solid #6366f1;
+        }
+
+        .corner-tl {
+            top: 20px;
+            left: 20px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .corner-tr {
+            top: 20px;
+            right: 20px;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .corner-bl {
+            bottom: 20px;
+            left: 20px;
+            border-right: none;
+            border-top: none;
+        }
+
+        .corner-br {
+            bottom: 20px;
+            right: 20px;
+            border-left: none;
+            border-top: none;
         }
     </style>
 </head>
 
 <body class="min-h-screen flex items-center justify-center p-6">
-    <div class="scanner-container p-8 w-full max-w-lg space-y-6">
-        <div class="text-center space-y-3">
-            <div class="w-16 h-16 bg-indigo-600 rounded-3xl flex items-center justify-center mx-auto">
-                <span class="material-icons text-white text-3xl">qr_code_scanner</span>
+    <div class="scanner-box p-10 w-full max-w-2xl space-y-8">
+        <!-- Header -->
+        <div class="text-center space-y-4">
+            <div
+                class="w-20 h-20 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-[2rem] flex items-center justify-center mx-auto shadow-2xl shadow-indigo-200">
+                <span class="material-icons text-white text-4xl">qr_code_scanner</span>
             </div>
-            <h1 class="text-2xl font-black text-slate-900">مسح رمز الحجز</h1>
-            <p class="text-sm text-slate-500 font-bold">وجه الكاميرا نحو رمز QR الخاص بالعميل</p>
+            <h1 class="text-3xl font-black text-slate-900 tracking-tight">مسح رمز الحجز</h1>
+            <p class="text-sm text-slate-500 font-bold">وجه الكاميرا نحو رمز QR</p>
         </div>
 
-        <div id="reader" class="w-full"></div>
-
-        <div id="status" class="hidden p-4 rounded-2xl text-center">
-            <p class="font-bold text-sm"></p>
+        <!-- Camera View -->
+        <div class="relative mx-auto" style="max-width: 500px;">
+            <video id="video" autoplay playsinline class="shadow-2xl"></video>
+            <canvas id="canvas" class="hidden"></canvas>
+            <div class="corner corner-tl"></div>
+            <div class="corner corner-tr"></div>
+            <div class="corner corner-bl"></div>
+            <div class="corner corner-br"></div>
+            <div class="scan-line"></div>
         </div>
 
+        <!-- Status -->
+        <div id="status" class="p-6 rounded-2xl text-center bg-blue-50">
+            <p class="font-black text-sm text-blue-600 uppercase tracking-wider">
+                <span class="material-icons text-lg align-middle animate-pulse">camera</span>
+                جاري تشغيل الكاميرا...
+            </p>
+        </div>
+
+        <!-- Back Button -->
         <button onclick="goBack()"
-            class="w-full py-4 text-slate-400 hover:text-slate-900 font-black text-xs uppercase tracking-widest transition-all">
-            <span class="material-icons text-sm align-middle">arrow_back</span>
+            class="w-full py-5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-2xl font-black text-xs uppercase tracking-widest transition-all flex items-center justify-center gap-3">
+            <span class="material-icons text-sm">arrow_back</span>
             العودة للوحة التحكم
         </button>
     </div>
 
     <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
         const statusDiv = document.getElementById('status');
+        let scanning = true;
 
-        function showStatus(message, type = 'info') {
-            statusDiv.classList.remove('hidden', 'bg-green-50', 'bg-red-50', 'bg-blue-50');
-            statusDiv.classList.add(type === 'success' ? 'bg-green-50' : type === 'error' ? 'bg-red-50' : 'bg-blue-50');
-            statusDiv.querySelector('p').textContent = message;
-            statusDiv.querySelector('p').className = `font-bold text-sm ${type === 'success' ? 'text-green-600' : type === 'error' ? 'text-red-600' : 'text-blue-600'}`;
+        function showStatus(message, icon, color) {
+            statusDiv.className = `p-6 rounded-2xl text-center bg-${color}-50`;
+            statusDiv.innerHTML = `
+                <p class="font-black text-sm text-${color}-600 uppercase tracking-wider">
+                    <span class="material-icons text-lg align-middle ${icon === 'camera' ? 'animate-pulse' : ''}">${icon}</span>
+                    ${message}
+                </p>
+            `;
         }
 
         function goBack() {
+            scanning = false;
+            if (video.srcObject) {
+                video.srcObject.getTracks().forEach(track => track.stop());
+            }
             window.location.href = 'admin.html';
         }
 
-        function onScanSuccess(decodedText, decodedResult) {
-            console.log(`QR Code detected: ${decodedText}`);
-            showStatus('✓ تم المسح بنجاح! جاري التحقق...', 'success');
+        // Start camera
+        navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'environment' }
+        })
+            .then(stream => {
+                video.srcObject = stream;
+                video.play();
+                showStatus('جاهز للمسح', 'qr_code_scanner', 'green');
+                requestAnimationFrame(tick);
+            })
+            .catch(err => {
+                console.error('Camera error:', err);
+                showStatus('فشل الوصول للكاميرا', 'error', 'red');
+            });
 
-            // Stop scanner
-            html5QrcodeScanner.clear();
+        function tick() {
+            if (!scanning) return;
 
-            // Redirect to verify page with QR code
-            setTimeout(() => {
-                window.location.href = `verify.html?qr=${decodedText}`;
-            }, 500);
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                canvas.height = video.videoHeight;
+                canvas.width = video.videoWidth;
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                    inversionAttempts: "dontInvert",
+                });
+
+                if (code) {
+                    console.log('QR Code found:', code.data);
+                    scanning = false;
+                    showStatus('✓ تم المسح بنجاح!', 'check_circle', 'green');
+
+                    // Stop camera
+                    video.srcObject.getTracks().forEach(track => track.stop());
+
+                    // Redirect to verify page
+                    setTimeout(() => {
+                        window.location.href = `verify.html?qr=${code.data}`;
+                    }, 800);
+                    return;
+                }
+            }
+            requestAnimationFrame(tick);
         }
-
-        function onScanFailure(error) {
-            // Ignore scan failures (happens continuously while scanning)
-        }
-
-        // Initialize scanner
-        const html5QrcodeScanner = new Html5QrcodeScanner(
-            "reader",
-            {
-                fps: 10,
-                qrbox: { width: 250, height: 250 },
-                aspectRatio: 1.0,
-                formatsToSupport: [Html5QrcodeSupportedFormats.QR_CODE]
-            },
-            false
-        );
-
-        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
-
-        showStatus('📷 جاري تشغيل الكاميرا...', 'info');
     </script>
 </body>
 
