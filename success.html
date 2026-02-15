@@ -228,6 +228,43 @@
 
                 console.log("✅ Update successful! Updated rows:", updateResult.length);
 
+                // Send email notification
+                const booking = updateResult[0];
+                try {
+                    await fetch('https://api.web3forms.com/submit', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            access_key: 'd1f287e0-4bc9-4233-81ee-a65dbb03e29f',
+                            subject: '💰 دفع مؤكد - نادي الحريضة للطيران',
+                            from_name: 'نظام الحجز - نادي الحريضة',
+                            message: `
+تم تأكيد دفع حجز جديد! 🎉
+
+📋 تفاصيل الحجز:
+━━━━━━━━━━━━━━━━━━━━
+👤 الاسم: ${booking.customer_name}
+📱 الهاتف: ${booking.customer_phone}
+📅 التاريخ: ${booking.booking_date}
+⏰ الوقت: ${booking.booking_time}
+✈️ الباقة: ${booking.package}
+
+💳 معلومات الدفع:
+━━━━━━━━━━━━━━━━━━━━
+💰 الحالة: مدفوع ✅
+🆔 رقم الدفع: ${moyasarId || 'غير متوفر'}
+🔗 رمز الحجز: ${qrId}
+
+يمكنك الآن مراجعة الحجز في لوحة التحكم.
+                            `
+                        })
+                    });
+                    console.log("✅ Email notification sent!");
+                } catch (emailError) {
+                    console.error("⚠️ Email notification failed (non-critical):", emailError);
+                    // Don't throw - email failure shouldn't break the payment flow
+                }
+
                 // Double check if it actually updated
                 const { data: checkData, error: checkError } = await supabaseClient
                     .from('bookings')
